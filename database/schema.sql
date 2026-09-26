@@ -92,15 +92,12 @@ CREATE TABLE USER_ROLE (
 CREATE TABLE ARTWORK (
     ArtworkID INT UNSIGNED AUTO_INCREMENT,
     CollectionID INT UNSIGNED NOT NULL,
-    AccessionNumber VARCHAR(40) NOT NULL,
+    AccessionNumber VARCHAR(50) NOT NULL,
     Title VARCHAR(200) NOT NULL,
-    CreationYear SMALLINT UNSIGNED,
-    Medium VARCHAR(120) NOT NULL,
-    Dimensions VARCHAR(120),
-    AcquisitionDate DATE NOT NULL,
-    AcquisitionMethod VARCHAR(60),
-    Description TEXT,
-    IsActive BOOLEAN NOT NULL,
+    CreationYear INT,
+    Medium VARCHAR(100) NOT NULL,
+    Dimensions VARCHAR(100),
+    Description VARCHAR(500),
 
     PRIMARY KEY (ArtworkID),
 
