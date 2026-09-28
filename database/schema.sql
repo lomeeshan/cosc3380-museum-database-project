@@ -22,13 +22,12 @@ CREATE TABLE ARTIST (
 CREATE TABLE GALLERY (
     GalleryID INT UNSIGNED AUTO_INCREMENT,
     GalleryName VARCHAR(100) NOT NULL,
-    FloorNumber SMALLINT,
-    Capacity INT UNSIGNED,
+    Capacity INT,
     AccessibilityNotes VARCHAR(255),
-    IsActive BOOLEAN NOT NULL,
 
     PRIMARY KEY (GalleryID)
 );
+
 
 CREATE TABLE VISITOR (
     VisitorID INT UNSIGNED AUTO_INCREMENT,
@@ -108,11 +107,11 @@ CREATE TABLE ARTWORK (
 CREATE TABLE EXHIBITION (
     ExhibitionID INT UNSIGNED AUTO_INCREMENT,
     GalleryID INT UNSIGNED NOT NULL,
-    ExhibitionTitle VARCHAR(180) NOT NULL,
+    ExhibitionTitle VARCHAR(200) NOT NULL,
     StartDate DATE NOT NULL,
     EndDate DATE NOT NULL,
-    Description TEXT,
-    Status VARCHAR(20) NOT NULL,
+    Description VARCHAR(500),
+    Status VARCHAR(30) NOT NULL,
 
     PRIMARY KEY (ExhibitionID),
 
@@ -121,6 +120,7 @@ CREATE TABLE EXHIBITION (
 
     CHECK (EndDate >= StartDate)
 );
+
 
 
 CREATE TABLE EMPLOYEE (
@@ -172,4 +172,34 @@ CREATE TABLE GIFTSHOP_SALE (
     FOREIGN KEY (EmployeeID)
         REFERENCES EMPLOYEE(EmployeeID)
 );
+
+CREATE TABLE ARTIST_CREATES_ARTWORK (
+    ArtistID INT UNSIGNED NOT NULL,
+    ArtworkID INT UNSIGNED NOT NULL,
+    CreatorRole VARCHAR(100),
+
+    PRIMARY KEY (ArtistID, ArtworkID),
+
+    FOREIGN KEY (ArtistID)
+        REFERENCES ARTIST(ArtistID),
+
+    FOREIGN KEY (ArtworkID)
+        REFERENCES ARTWORK(ArtworkID)
+);
+
+CREATE TABLE ARTWORK_PARTICIPATESIN_EXHIBITION (
+    ExhibitionID INT UNSIGNED NOT NULL,
+    ArtworkID INT UNSIGNED NOT NULL,
+    DisplayOrder INT,
+    DisplayNotes VARCHAR(255),
+
+    PRIMARY KEY (ExhibitionID, ArtworkID),
+
+    FOREIGN KEY (ExhibitionID)
+        REFERENCES EXHIBITION(ExhibitionID),
+
+    FOREIGN KEY (ArtworkID)
+        REFERENCES ARTWORK(ArtworkID)
+);
+
 
