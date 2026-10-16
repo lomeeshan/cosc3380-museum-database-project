@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../db/connection');
-const { requireLogin, requireRole } = require('../middleware/Auth');
+const { requireLogin, requireRole } = require('../middleware/auth');
 const router = express.Router();
 
 // Fixed allowlist: table names/field names NEVER come from SQL user input.
