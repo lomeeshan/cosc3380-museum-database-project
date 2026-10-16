@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tickets · Museum Management</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<main id="content">
+    <h1>Ticket Sales</h1>
+    <p class="subtitle">Record a museum admission or exhibition ticket purchase.</p>
+
+    <section class="card">
+        <h2>Purchase ticket</h2>
+        <form id="ticketForm">
+            <div class="gridform">
+                <div class="field">
+                    <label for="visitorId">Visitor</label>
+                    <select id="visitorId" required></select>
+                </div>
+                <div class="field">
+                    <label for="ticketType">Ticket type</label>
+                    <select id="ticketType">
+                        <option>Adult</option>
+                        <option>Child</option>
+                        <option>Student</option>
+                        <option>Senior</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="exhibitionId">Exhibition</label>
+                    <select id="exhibitionId">
+                        <option value="">General museum admission</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="visitDate">Visit date</label>
+                    <input id="visitDate" type="date" required>
+                </div>
+            </div>
+            <div class="formfooter">
+                <button class="btn" type="submit">Purchase ticket</button>
+                <small>Tickets expire at 11:59 PM on their visit date.</small>
+            </div>
+        </form>
+        <p aria-live="polite" id="ticketMessage"></p>
+    </section>
+
+    <section class="card">
+        <h2>Recent tickets</h2>
+        <div class="tablewrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>Purchased</th>
+                        <th>Visit date</th>
+                        <th>Expires at</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Price ($)</th>
+                        <th>Visitor</th>
+                        <th>Exhibition</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketRows"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<script defer src="/js/common.js"></script>
+<script defer src="/js/tickets.js"></script>
+</body>
+</html>
