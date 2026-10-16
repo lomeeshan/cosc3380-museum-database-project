@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Manage Records &middot; Museum Management
+  </title>
+  <link href="/css/styles.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <main id="content">
+   <h1 id="pageTitle">
+    Manage records
+   </h1>
+   <p class="subtitle" id="pageIntro">
+    Add, modify and manage museum records.
+   </p>
+   <div class="card" id="editor">
+    <h2 id="formTitle">
+     Add record
+    </h2>
+    <form id="recordForm">
+     <div class="gridform" id="fields">
+     </div>
+     <div class="formfooter">
+      <button class="btn" id="saveButton" type="submit">
+       Save record
+      </button>
+      <button class="btn secondary" id="cancelButton" type="button">
+       Cancel edit
+      </button>
+     </div>
+    </form>
+    <p aria-live="polite" id="formStatus">
+    </p>
+   </div>
+   <div class="card">
+    <h2>
+     Records
+    </h2>
+    <div class="tablewrap">
+     <table>
+      <thead>
+       <tr id="tableHead">
+       </tr>
+      </thead>
+      <tbody id="recordRows">
+      </tbody>
+     </table>
+    </div>
+    <p aria-live="polite" id="listStatus">
+    </p>
+   </div>
+  </main>
+  <script defer="" src="/js/common.js">
+  </script>
+  <script defer="" src="/js/manage.js">
+  </script>
+ </body>
+</html>

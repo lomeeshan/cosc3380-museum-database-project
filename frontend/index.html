@@ -1,18 +1,93 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Museum Management System</title>
-</head>
-
-<body>
-    <h1>Museum Management System</h1>
-
-    <p>COSC 3380 — Team 4</p>
-
-    <p>Our museum database application is under development.</p>
-</body>
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Dashboard &middot; Museum Management
+  </title>
+  <link href="/css/styles.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <main id="content">
+   <h1>
+    Museum Dashboard
+   </h1>
+   <p class="subtitle">
+    Manage collections, exhibitions, visitors and museum operations.
+   </p>
+   <div class="cards">
+    <div class="card">
+     <small>
+      Artworks
+     </small>
+     <div class="metric" id="countArtworks">
+      &mdash;
+     </div>
+     <a href="/manage.html?entity=artworks">
+      Manage artworks &rarr;
+     </a>
+    </div>
+    <div class="card">
+     <small>
+      Exhibitions
+     </small>
+     <div class="metric" id="countExhibitions">
+      &mdash;
+     </div>
+     <a href="/manage.html?entity=exhibitions">
+      Manage exhibitions &rarr;
+     </a>
+    </div>
+    <div class="card">
+     <small>
+      Visitors
+     </small>
+     <div class="metric" id="countVisitors">
+      &mdash;
+     </div>
+     <a href="/manage.html?entity=visitors">
+      Manage visitors &rarr;
+     </a>
+    </div>
+    <div class="card">
+     <small>
+      Gift shop products
+     </small>
+     <div class="metric" id="countProducts">
+      &mdash;
+     </div>
+     <a href="/giftshop.html">
+      View gift shop &rarr;
+     </a>
+    </div>
+   </div>
+   <div class="card">
+    <h2>
+     Quick actions
+    </h2>
+    <div class="actions">
+     <a class="btn" href="/tickets.html">
+      Sell Ticket
+     </a>
+     <a class="btn secondary" href="/giftshop.html">
+      Gift Shop Sale
+     </a>
+     <a class="btn secondary" href="/queries.html">
+      Search Records
+     </a>
+     <a class="btn secondary" href="/reports.html">
+      View Reports
+     </a>
+    </div>
+   </div>
+   <p aria-live="polite" id="status">
+   </p>
+  </main>
+  <script defer="" src="/js/common.js">
+  </script>
+  <script defer="" src="/js/dashboard.js">
+  </script>
+ </body>
 </html>
+
