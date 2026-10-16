@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { rateLimit } = require('express-rate-limit');
 const db = require('../db/connection');
-const { requireLogin, COOKIE_NAME, cookieOptions } = require('../middleware/Auth');
+const { requireLogin, COOKIE_NAME, cookieOptions } = require('../middleware/auth');
 const router = express.Router();
 
 const loginLimit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 20,
