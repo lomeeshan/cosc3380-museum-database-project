@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Sign in &middot; Museum Management
+  </title>
+  <link href="/css/styles.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div class="login-wrap">
+   <main class="login-card">
+    <span class="pill">
+     COSC 3380 &middot; Team 4
+    </span>
+    <h1 style="margin-top:14px">
+     Museum Management
+    </h1>
+    <p class="muted">
+     Sign in to manage museum records and reports.
+    </p>
+    <form id="loginForm">
+     <div class="field">
+      <label for="username">
+       Username
+      </label>
+      <input autocomplete="username" id="username" maxlength="50" required=""/>
+     </div>
+     <div class="field">
+      <label for="password">
+       Password
+      </label>
+      <input autocomplete="current-password" id="password" required="" type="password"/>
+     </div>
+     <button class="btn" style="width:100%" type="submit">
+      Sign in
+     </button>
+    </form>
+    <p aria-live="polite" id="message">
+    </p>
+   </main>
+  </div>
+  <script defer="" src="/js/login.js">
+  </script>
+ </body>
+</html>
