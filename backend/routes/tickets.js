@@ -5,7 +5,7 @@ const { requireLogin, requireRole } = require('../middleware/auth');
 const router = express.Router();
 router.use(requireLogin, requireRole('Admin', 'Sales Staff'));
 
-// Demonstration prices for the class project, not actual museum prices.
+
 const PRICE = { Adult: 20, Child: 8, Student: 12, Senior: 14 };
 
 function validVisitDate(value) {

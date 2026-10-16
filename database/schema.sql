@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS MuseumDatabase
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_0900_ai_ci;
+
 USE MuseumDatabase;
 
 CREATE TABLE COLLECTION (
@@ -28,7 +32,6 @@ CREATE TABLE GALLERY (
     PRIMARY KEY (GalleryID)
 );
 
-
 CREATE TABLE VISITOR (
     VisitorID INT UNSIGNED AUTO_INCREMENT,
     FirstName VARCHAR(80) NOT NULL,
@@ -37,18 +40,6 @@ CREATE TABLE VISITOR (
     Phone VARCHAR(25),
 
     PRIMARY KEY (VisitorID)
-);
-
-CREATE TABLE TICKET_TYPE (
-    TicketTypeID INT UNSIGNED AUTO_INCREMENT,
-    TypeName VARCHAR(60) NOT NULL,
-    StandardPrice DECIMAL(8,2) NOT NULL,
-    Description VARCHAR(255),
-    IsActive BOOLEAN NOT NULL,
-
-    PRIMARY KEY (TicketTypeID),
-
-    CHECK (StandardPrice >= 0)
 );
 
 CREATE TABLE GIFTSHOP_PRODUCT (
@@ -77,12 +68,10 @@ CREATE TABLE DEPARTMENT (
     PRIMARY KEY (DepartmentID)
 );
 
-
 CREATE TABLE USER_ROLE (
     RoleID INT UNSIGNED AUTO_INCREMENT,
-    RoleName VARCHAR(60) NOT NULL,
+    RoleName VARCHAR(50) NOT NULL,
     RoleDescription VARCHAR(255),
-    IsActive BOOLEAN NOT NULL,
 
     PRIMARY KEY (RoleID)
 );
@@ -102,6 +91,8 @@ CREATE TABLE ARTWORK (
 
     FOREIGN KEY (CollectionID)
         REFERENCES COLLECTION(CollectionID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE EXHIBITION (
@@ -116,54 +107,80 @@ CREATE TABLE EXHIBITION (
     PRIMARY KEY (ExhibitionID),
 
     FOREIGN KEY (GalleryID)
-        REFERENCES GALLERY(GalleryID),
+        REFERENCES GALLERY(GalleryID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
 
     CHECK (EndDate >= StartDate)
 );
 
-
-
 CREATE TABLE EMPLOYEE (
     EmployeeID INT UNSIGNED AUTO_INCREMENT,
     DepartmentID INT UNSIGNED NOT NULL,
-    FirstName VARCHAR(80) NOT NULL,
-    LastName VARCHAR(80) NOT NULL,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
     JobTitle VARCHAR(100) NOT NULL,
     HireDate DATE NOT NULL,
-    Email VARCHAR(254),
-    EmploymentStatus VARCHAR(20) NOT NULL,
+    Email VARCHAR(100),
+    EmploymentStatus VARCHAR(30) NOT NULL,
 
     PRIMARY KEY (EmployeeID),
 
     FOREIGN KEY (DepartmentID)
         REFERENCES DEPARTMENT(DepartmentID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
 
+CREATE TABLE EMPLOYEE_ACCOUNT (
+    AccountID INT UNSIGNED AUTO_INCREMENT,
+    EmployeeID INT UNSIGNED NOT NULL,
+    RoleID INT UNSIGNED NOT NULL,
+    Username VARCHAR(50) NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    AccountStatus VARCHAR(30) NOT NULL,
+    CreatedDateTime DATETIME NOT NULL,
+
+    PRIMARY KEY (AccountID),
+
+    UNIQUE KEY uq_employee_account_employee (EmployeeID),
+    UNIQUE KEY uq_employee_account_username (Username),
+
+    FOREIGN KEY (EmployeeID)
+        REFERENCES EMPLOYEE(EmployeeID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    FOREIGN KEY (RoleID)
+        REFERENCES USER_ROLE(RoleID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+);
 
 CREATE TABLE TICKET (
     TicketID INT UNSIGNED AUTO_INCREMENT,
     VisitorID INT UNSIGNED NOT NULL,
-    TicketTypeID INT UNSIGNED NOT NULL,
-    IssueDateTime DATETIME NOT NULL,
-    VisitDate DATE NOT NULL,
-    PricePaid DECIMAL(8,2) NOT NULL,
-    TicketStatus VARCHAR(20) NOT NULL,
-    ExhibitionID INT UNSIGNED NULL DEFAULT NULL,
+    ExhibitionID INT UNSIGNED NULL,
+    TicketType VARCHAR(30) NOT NULL,
+    TicketTime DATETIME NOT NULL,
+    TicketPrice DECIMAL(8,2) NOT NULL,
+    VisitDate DATE NULL,
+    ExpirationDateTime DATETIME NULL,
 
     PRIMARY KEY (TicketID),
 
     FOREIGN KEY (VisitorID)
-        REFERENCES VISITOR(VisitorID),
+        REFERENCES VISITOR(VisitorID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
 
-    FOREIGN KEY (TicketTypeID)
-        REFERENCES TICKET_TYPE(TicketTypeID),
-    
-    FOREIGN KEY (ExhibitionID)
-        REFERENCES EXHIBITION(ExhibitionID),
-        ON DELETE SET NULL,
-    
+    CONSTRAINT fk_ticket_exhibition
+        FOREIGN KEY (ExhibitionID)
+        REFERENCES EXHIBITION(ExhibitionID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
 
-    CHECK (PricePaid >= 0)
+    CHECK (TicketPrice >= 0)
 );
 
 CREATE TABLE GIFTSHOP_SALE (
@@ -177,7 +194,8 @@ CREATE TABLE GIFTSHOP_SALE (
 
     FOREIGN KEY (EmployeeID)
         REFERENCES EMPLOYEE(EmployeeID)
-        
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE GIFTSHOP_SALE_ITEM (
@@ -189,15 +207,18 @@ CREATE TABLE GIFTSHOP_SALE_ITEM (
     PRIMARY KEY (SaleID, ProductID),
 
     FOREIGN KEY (SaleID)
-        REFERENCES GIFTSHOP_SALE(SaleID),
+        REFERENCES GIFTSHOP_SALE(SaleID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
 
     FOREIGN KEY (ProductID)
-        REFERENCES GIFTSHOP_PRODUCT(ProductID),
+        REFERENCES GIFTSHOP_PRODUCT(ProductID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
 
     CHECK (Quantity > 0),
     CHECK (UnitPriceAtSale >= 0)
 );
-
 
 CREATE TABLE ARTIST_CREATES_ARTWORK (
     ArtistID INT UNSIGNED NOT NULL,
@@ -207,10 +228,14 @@ CREATE TABLE ARTIST_CREATES_ARTWORK (
     PRIMARY KEY (ArtistID, ArtworkID),
 
     FOREIGN KEY (ArtistID)
-        REFERENCES ARTIST(ArtistID),
+        REFERENCES ARTIST(ArtistID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
 
     FOREIGN KEY (ArtworkID)
         REFERENCES ARTWORK(ArtworkID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE ARTWORK_PARTICIPATESIN_EXHIBITION (
@@ -222,12 +247,15 @@ CREATE TABLE ARTWORK_PARTICIPATESIN_EXHIBITION (
     PRIMARY KEY (ExhibitionID, ArtworkID),
 
     FOREIGN KEY (ExhibitionID)
-        REFERENCES EXHIBITION(ExhibitionID),
+        REFERENCES EXHIBITION(ExhibitionID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
 
     FOREIGN KEY (ArtworkID)
         REFERENCES ARTWORK(ArtworkID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
-
 
 CREATE TABLE EMPLOYEE_WORKSON_EXHIBITION (
     EmployeeID INT UNSIGNED NOT NULL,
@@ -237,10 +265,14 @@ CREATE TABLE EMPLOYEE_WORKSON_EXHIBITION (
     PRIMARY KEY (EmployeeID, ExhibitionID),
 
     FOREIGN KEY (EmployeeID)
-        REFERENCES EMPLOYEE(EmployeeID),
+        REFERENCES EMPLOYEE(EmployeeID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
 
     FOREIGN KEY (ExhibitionID)
         REFERENCES EXHIBITION(ExhibitionID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
-git checkout -b add-extension-id
+SHOW TABLES;
