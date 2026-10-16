@@ -1,0 +1,63 @@
+/* Shared styles for the museum website. Keep pages consistent and easy to read. */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #243447; }
+a { color: #246f83; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+h1 { font-size: 26px; margin: 0 0 8px; }
+h2 { font-size: 19px; margin: 0 0 16px; }
+p { line-height: 1.5; }
+small, .muted, .subtitle { color: #617283; }
+.subtitle { margin: 0 0 24px; }
+.hidden { display: none !important; }
+
+/* Navigation and page layout */
+.shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+.sidebar { padding: 20px 14px; color: white; background: #213e58; }
+.brand { padding: 5px 10px 20px; font-size: 20px; font-weight: bold; }
+.brand span { color: #91d2d1; }
+.navgroup { margin: 20px 10px 7px; color: #b7cedb; font-size: 12px; text-transform: uppercase; }
+.navlink { display: block; color: white; text-decoration: none; padding: 10px; border-radius: 4px; }
+.navlink:hover, .navlink.active { background: #315775; }
+.main { min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid #d9e0e6; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+.content { max-width: 1100px; margin: auto; padding: 28px 24px; }
+
+/* Boxes, buttons and forms */
+.card { background: white; border: 1px solid #dce4eb; border-radius: 6px; padding: 20px; margin-bottom: 18px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+.metric { font-size: 28px; font-weight: bold; color: #1d6d7a; margin: 8px 0; }
+.actions, .formfooter { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.formfooter { margin-top: 14px; }
+.btn { background: #247b85; border: 1px solid #247b85; color: white; padding: 9px 13px; border-radius: 4px; text-decoration: none; display: inline-block; }
+.btn.secondary { background: white; color: #24536c; border-color: #b9cbd6; }
+.btn.danger { background: white; color: #a22e38; border-color: #e0aeb4; }
+.btn:hover { opacity: 0.9; }
+.gridform { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.field label { display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+.field input, .field select, .field textarea { width: 100%; min-height: 38px; padding: 8px; border: 1px solid #b6c5d1; border-radius: 4px; }
+.field textarea { min-height: 85px; resize: vertical; }
+.notice { padding: 11px; border-radius: 4px; background: #e9f7f2; color: #175944; }
+.notice.error { background: #fff0f0; color: #952932; }
+.pill { background: #e5f1f2; color: #246f83; font-size: 12px; border-radius: 12px; padding: 5px 10px; }
+
+/* Lists and tables */
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e0e7ec; font-size: 14px; }
+th { background: #f5f8fa; }
+
+/* Login screen */
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #213e58; padding: 20px; }
+.login-card { width: min(420px, 100%); padding: 28px; border-radius: 6px; background: white; }
+.login-card .field { margin: 14px 0; }
+
+@media (max-width: 750px) {
+  .shell { display: block; }
+  .sidebar { padding: 12px; }
+  .sidebar nav { display: flex; flex-wrap: wrap; }
+  .navgroup { display: none; }
+  .navlink { padding: 7px; }
+  .content { padding: 18px 12px; }
+  .topbar { padding: 12px; }
+}
