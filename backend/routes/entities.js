@@ -3,7 +3,7 @@ const db = require('../db/connection');
 const { requireLogin, requireRole } = require('../middleware/auth');
 const router = express.Router();
 
-// Fixed allowlist: table names/field names NEVER come from SQL user input.
+
 const settings = {
   artists: { table: 'ARTIST', pk: 'ArtistID', fields: ['ArtistName','BirthYear','DeathYear','Nationality','Biography'], required: ['ArtistName'], writeRoles: ['Admin','Curator'] },
   collections: { table: 'COLLECTION', pk: 'CollectionID', fields: ['CollectionName','Description'], required: ['CollectionName'], writeRoles: [] },
