@@ -1,4 +1,3 @@
-/* Shared styles for the museum website. Keep pages consistent and easy to read. */
 * { box-sizing: border-box; }
 body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #243447; }
 a { color: #246f83; }
@@ -11,7 +10,7 @@ small, .muted, .subtitle { color: #617283; }
 .subtitle { margin: 0 0 24px; }
 .hidden { display: none !important; }
 
-/* Navigation and page layout */
+/* navigation and page layout */
 .shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
 .sidebar { padding: 20px 14px; color: white; background: #213e58; }
 .brand { padding: 5px 10px 20px; font-size: 20px; font-weight: bold; }
@@ -23,7 +22,7 @@ small, .muted, .subtitle { color: #617283; }
 .topbar { background: white; border-bottom: 1px solid #d9e0e6; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
 .content { max-width: 1100px; margin: auto; padding: 28px 24px; }
 
-/* Boxes, buttons and forms */
+/* boxes, buttons and forms */
 .card { background: white; border: 1px solid #dce4eb; border-radius: 6px; padding: 20px; margin-bottom: 18px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
 .metric { font-size: 28px; font-weight: bold; color: #1d6d7a; margin: 8px 0; }
@@ -41,7 +40,7 @@ small, .muted, .subtitle { color: #617283; }
 .notice.error { background: #fff0f0; color: #952932; }
 .pill { background: #e5f1f2; color: #246f83; font-size: 12px; border-radius: 12px; padding: 5px 10px; }
 
-/* Lists and tables */
+/* lists and tables */
 .tablewrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e0e7ec; font-size: 14px; }
