@@ -8,7 +8,7 @@ const db = require('./db/connection');
 
 const app = express();
 
-// Check that the authentication secret is configured.
+// Check that the authentication is configured.
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
     throw new Error(
         'Set JWT_SECRET to a random string of at least 32 characters in .env'
@@ -25,10 +25,10 @@ app.disable('x-powered-by');
 app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
 
-// Serve the frontend HTML, CSS, and JavaScript files.
+//frontend HTML, CSS, and JavaScript files.
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// Check whether the server can connect to MySQL.
+//Check for whether the server can connect to MySQL.
 app.get('/api/health', async (req, res) => {
     try {
         await db.query('SELECT 1');
@@ -50,11 +50,14 @@ app.get('/api/health', async (req, res) => {
 // Alaric's authentication routes
 app.use('/api/auth', require('./routes/auth'));
 
-// Alaric's CRUD routes
+// Alaric's crud routes
 app.use('/api/entities', require('./routes/entities'));
 
 // Eeshan's ticket purchase routes
 app.use('/api/tickets', require('./routes/tickets'));
+
+// Eeshan's sale routes
+app.use('/api/sales', require('./routes/sales'));
 
 
 app.use('/api', (req, res) => {
@@ -70,7 +73,7 @@ app.use((err, req, res, next) => {
         return next(err);
     }
 
-    // Database trigger business-rule errors
+    // Database trigger errors
     if (err.sqlState === '45000') {
         return res.status(409).json({
             error: err.sqlMessage || 'Museum business rule violated'
@@ -109,7 +112,7 @@ app.use((err, req, res, next) => {
         });
     }
 
-    // Other client errors
+    // Other errors
     if (err.status && err.status >= 400 && err.status < 500) {
         return res.status(err.status).json({
             error: err.message
