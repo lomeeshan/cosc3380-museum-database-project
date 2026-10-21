@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Queries - Museum Management</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <main id="content">
+    <h1>Database Queries</h1>
+    <p class="subtitle">Choose an artist or exhibition to search museum records.</p>
+
+    <section class="card">
+      <h2>Q1 - Artworks by Artist</h2>
+      <form class="actions" id="artistForm">
+        <label for="artistId">Artist</label>
+        <select id="artistId" required></select>
+        <button class="btn" type="submit">Search</button>
+      </form>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Artist</th><th>Artwork ID</th><th>Title</th><th>Medium</th></tr></thead>
+        <tbody id="artistRows"></tbody>
+      </table></div>
+    </section>
+
+    <section class="card">
+      <h2>Q2 - Employees Working on a Particular Exhibition</h2>
+      <form class="actions" id="employeeExhibitionForm">
+        <label for="employeeExhibitionId">Exhibition</label>
+        <select id="employeeExhibitionId" required></select>
+        <button class="btn" type="submit">Search</button>
+      </form>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Exhibition</th><th>Employee ID</th><th>Employee Name</th><th>Job Title</th><th>Assignment Role</th></tr></thead>
+        <tbody id="employeeExhibitionRows"></tbody>
+      </table></div>
+    </section>
+
+    <section class="card">
+      <h2>Q3 - Artworks Participating in an Exhibition</h2>
+      <form class="actions" id="artworkExhibitionForm">
+        <label for="artworkExhibitionId">Exhibition</label>
+        <select id="artworkExhibitionId" required></select>
+        <button class="btn" type="submit">Search</button>
+      </form>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Exhibition</th><th>Artwork ID</th><th>Title</th><th>Medium</th></tr></thead>
+        <tbody id="artworkExhibitionRows"></tbody>
+      </table></div>
+    </section>
+
+    <p id="queryMessage" aria-live="polite"></p>
+  </main>
+  <script defer src="/js/common.js"></script>
+  <script defer src="/js/queries.js"></script>
+</body>
+</html>

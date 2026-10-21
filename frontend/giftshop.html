@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Gift Shop &middot; Museum Management
+  </title>
+  <link href="/css/styles.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <main id="content">
+   <h1>
+    Gift Shop
+   </h1>
+   <p class="subtitle">
+    View stock, make sales and manage museum products.
+   </p>
+   <div class="actions" style="margin-bottom:20px">
+    <a class="btn secondary" href="/manage.html?entity=products">
+     Manage products
+    </a>
+   </div>
+   <section class="card">
+    <h2>
+     Complete a sale
+    </h2>
+    <form id="saleForm">
+     <div class="gridform">
+      <div class="field">
+       <label for="productId">
+        Product
+       </label>
+       <select id="productId" required="">
+       </select>
+      </div>
+      <div class="field">
+       <label for="quantity">
+        Quantity
+       </label>
+       <input id="quantity" min="1" required="" step="1" type="number" value="1"/>
+      </div>
+      <div class="field">
+       <label for="paymentMethod">
+        Payment method
+       </label>
+       <select id="paymentMethod">
+        <option>
+         Card
+        </option>
+        <option>
+         Cash
+        </option>
+       </select>
+      </div>
+     </div>
+     <div class="formfooter">
+      <button class="btn" type="submit">
+       Complete sale
+      </button>
+      <small>
+       Sales are final; no edit/delete of completed sale items.
+      </small>
+     </div>
+    </form>
+    <p aria-live="polite" id="saleMessage">
+    </p>
+   </section>
+   <section class="card">
+    <h2>
+     Products and inventory
+    </h2>
+    <div class="tablewrap">
+     <table>
+      <thead>
+       <tr>
+        <th>
+         Product
+        </th>
+        <th>
+         Category
+        </th>
+        <th>
+         Price ($)
+        </th>
+        <th>
+         In stock
+        </th>
+        <th>
+         Active
+        </th>
+       </tr>
+      </thead>
+      <tbody id="productRows">
+      </tbody>
+     </table>
+    </div>
+   </section>
+   <section class="card">
+    <h2>
+     Recent sales
+    </h2>
+    <div class="tablewrap">
+     <table>
+      <thead>
+       <tr>
+        <th>
+         Sale ID
+        </th>
+        <th>
+         Date
+        </th>
+        <th>
+         Payment
+        </th>
+        <th>
+         Status
+        </th>
+        <th>
+         Total ($)
+        </th>
+       </tr>
+      </thead>
+      <tbody id="saleRows">
+      </tbody>
+     </table>
+    </div>
+   </section>
+  </main>
+  <script defer="" src="/js/common.js">
+  </script>
+  <script defer="" src="/js/giftshop.js">
+  </script>
+ </body>
+</html>
