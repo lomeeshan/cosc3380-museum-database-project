@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Reports &middot; Museum Management
+  </title>
+  <link href="/css/styles.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <main id="content">
+   <h1>
+    Museum Reports
+   </h1>
+   <p class="subtitle">
+    Management summaries based on real database records.
+   </p>
+   <div class="actions" style="margin-bottom:20px">
+    <button class="btn" id="refreshReports">
+     Refresh reports
+    </button>
+   </div>
+   <section class="card">
+    <h2>
+     R1 &mdash; Monthly ticket revenue
+    </h2>
+    <div class="tablewrap">
+     <table>
+      <thead>
+       <tr>
+        <th>
+         Month
+        </th>
+        <th>
+         Tickets sold
+        </th>
+        <th>
+         Revenue ($)
+        </th>
+       </tr>
+      </thead>
+      <tbody id="ticketReport">
+      </tbody>
+     </table>
+    </div>
+   </section>
+   <section class="card">
+    <h2>
+     R2 &mdash; Gift shop revenue by product
+    </h2>
+    <div class="tablewrap">
+     <table>
+      <thead>
+       <tr>
+        <th>
+         Product
+        </th>
+        <th>
+         Units sold
+        </th>
+        <th>
+         Revenue ($)
+        </th>
+       </tr>
+      </thead>
+      <tbody id="shopReport">
+      </tbody>
+     </table>
+    </div>
+   </section>
+   <section class="card">
+    <h2>
+     R3 &mdash; Exhibition summary
+    </h2>
+    <div class="tablewrap">
+     <table>
+      <thead>
+       <tr>
+        <th>
+         Exhibition
+        </th>
+        <th>
+         Gallery
+        </th>
+        <th>
+         Status
+        </th>
+        <th>
+         Artworks
+        </th>
+       </tr>
+      </thead>
+      <tbody id="exhibitionReport">
+      </tbody>
+     </table>
+    </div>
+   </section>
+   <p aria-live="polite" id="reportMessage">
+   </p>
+  </main>
+  <script defer="" src="/js/common.js">
+  </script>
+  <script defer="" src="/js/reports.js">
+  </script>
+ </body>
+</html>
