@@ -1,4 +1,5 @@
-USE MuseumDatabase;
+
+DROP TRIGGER IF EXISTS set_ticket_expiration;
 
 DELIMITER $$
 
@@ -11,13 +12,10 @@ BEGIN
             SET MESSAGE_TEXT = 'Ticket visit date is required';
     END IF;
 
-    SET NEW.ExpirationDateTime =
-        TIMESTAMP(NEW.VisitDate, '23:59:00');
+    SET NEW.ExpirationDateTime = TIMESTAMP(NEW.VisitDate, '23:59:00');
 END$$
 
 DELIMITER ;
-
-
 
 DROP TRIGGER IF EXISTS deactivate_low_stock_product;
 
@@ -33,25 +31,3 @@ BEGIN
 END$$
 
 DELIMITER ;
-
-
-DROP TRIGGER IF EXISTS set_ticket_expiration;
-
-DELIMITER $$
-
-CREATE TRIGGER set_ticket_expiration
-BEFORE INSERT ON TICKET
-FOR EACH ROW
-BEGIN
-    IF NEW.VisitDate IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Ticket visit date is required';
-    END IF;
-
-    SET NEW.ExpirationDateTime =
-        TIMESTAMP(NEW.VisitDate, '23:59:00');
-END$$
-
-DELIMITER ;
-
-
