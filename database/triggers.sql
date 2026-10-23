@@ -1,3 +1,4 @@
+USE MuseumDatabase;
 
 DROP TRIGGER IF EXISTS set_ticket_expiration;
 
