@@ -38,6 +38,12 @@ small, .muted, .subtitle { color: #617283; }
 .field textarea { min-height: 85px; resize: vertical; }
 .notice { padding: 11px; border-radius: 4px; background: #e9f7f2; color: #175944; }
 .notice.error { background: #fff0f0; color: #952932; }
+.low-stock-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffe69c;
+  margin-top: 10px;
+}
 .pill { background: #e5f1f2; color: #246f83; font-size: 12px; border-radius: 12px; padding: 5px 10px; }
 
 /* lists and tables */

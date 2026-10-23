@@ -1,8 +1,9 @@
-
 const express = require('express');
 const db = require('../db/connection');
+const { requireLogin } = require('../middleware/auth');
 
 const router = express.Router();
+router.use(requireLogin);
 
 function readId(value, name) {
     const text = typeof value === 'string' ? value.trim() : '';
@@ -35,7 +36,7 @@ JOIN COLLECTION c               ON c.CollectionID = aw.CollectionID
 WHERE ar.ArtistID = ?
 ORDER BY aw.CreationYear, aw.Title`;
 
-router.get('/artist-artworks', async (req, res) => {
+router.get('/artworks-by-artist', async (req, res) => {
     const artistId = readId(req.query.artistId, 'artistId');
     const [rows] = await db.query(ARTIST_ARTWORKS_SQL, [artistId]);
     res.json(rows);
@@ -59,7 +60,7 @@ JOIN DEPARTMENT d                    ON d.DepartmentID   = e.DepartmentID
 WHERE ex.ExhibitionID = ?
 ORDER BY ewe.AssignmentRole, e.LastName`;
 
-router.get('/exhibition-staff', async (req, res) => {
+router.get('/employees-by-exhibition', async (req, res) => {
     const exhibitionId = readId(req.query.exhibitionId, 'exhibitionId');
     const [rows] = await db.query(EXHIBITION_STAFF_SQL, [exhibitionId]);
     res.json(rows);
@@ -90,7 +91,7 @@ GROUP BY ex.ExhibitionID, ex.ExhibitionTitle, g.GalleryName,
          aw.Medium, ape.DisplayNotes
 ORDER BY ape.DisplayOrder`;
 
-router.get('/exhibition-artworks', async (req, res) => {
+router.get('/artworks-by-exhibition', async (req, res) => {
     const exhibitionId = readId(req.query.exhibitionId, 'exhibitionId');
     const [rows] = await db.query(EXHIBITION_ARTWORKS_SQL, [exhibitionId]);
     res.json(rows);
