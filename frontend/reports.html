@@ -1,107 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <title>
-   Reports &middot; Museum Management
-  </title>
-  <link href="/css/styles.css" rel="stylesheet"/>
- </head>
- <body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Museum Reports</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
   <main id="content">
-   <h1>
-    Museum Reports
-   </h1>
-   <p class="subtitle">
-    Management summaries based on real database records.
-   </p>
-   <div class="actions" style="margin-bottom:20px">
-    <button class="btn" id="refreshReports">
-     Refresh reports
-    </button>
-   </div>
-   <section class="card">
-    <h2>
-     R1 &mdash; Monthly ticket revenue
-    </h2>
-    <div class="tablewrap">
-     <table>
-      <thead>
-       <tr>
-        <th>
-         Month
-        </th>
-        <th>
-         Tickets sold
-        </th>
-        <th>
-         Revenue ($)
-        </th>
-       </tr>
-      </thead>
-      <tbody id="ticketReport">
-      </tbody>
-     </table>
-    </div>
-   </section>
-   <section class="card">
-    <h2>
-     R2 &mdash; Gift shop revenue by product
-    </h2>
-    <div class="tablewrap">
-     <table>
-      <thead>
-       <tr>
-        <th>
-         Product
-        </th>
-        <th>
-         Units sold
-        </th>
-        <th>
-         Revenue ($)
-        </th>
-       </tr>
-      </thead>
-      <tbody id="shopReport">
-      </tbody>
-     </table>
-    </div>
-   </section>
-   <section class="card">
-    <h2>
-     R3 &mdash; Exhibition summary
-    </h2>
-    <div class="tablewrap">
-     <table>
-      <thead>
-       <tr>
-        <th>
-         Exhibition
-        </th>
-        <th>
-         Gallery
-        </th>
-        <th>
-         Status
-        </th>
-        <th>
-         Artworks
-        </th>
-       </tr>
-      </thead>
-      <tbody id="exhibitionReport">
-      </tbody>
-     </table>
-    </div>
-   </section>
-   <p aria-live="polite" id="reportMessage">
-   </p>
+    <h1>Museum Reports</h1>
+    <p class="subtitle">Choose filters and generate our three approved reports.</p>
+
+    <!-- R1: Combined Museum Revenue -->
+    <section class="card">
+      <h2>R1 - Combined Museum Revenue</h2>
+      <form id="revenueForm">
+        <div class="gridform">
+          <div class="field">
+            <label for="revenueSource">Revenue source</label>
+            <select id="revenueSource">
+              <option value="combined">Tickets + Gift Shop</option>
+              <option value="tickets">Tickets only</option>
+              <option value="giftshop">Gift Shop only</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="revenueStart">Purchase/sale date from</label>
+            <input id="revenueStart" type="date">
+          </div>
+          <div class="field">
+            <label for="revenueEnd">Purchase/sale date to</label>
+            <input id="revenueEnd" type="date">
+          </div>
+        </div>
+        <div class="formfooter">
+          <button class="btn" type="submit">Generate revenue report</button>
+        </div>
+      </form>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th><th>Ticket revenue ($)</th>
+              <th>Gift Shop revenue ($)</th><th>Total revenue ($)</th>
+            </tr>
+          </thead>
+          <tbody id="revenueRows"></tbody>
+        </table>
+      </div>
+      <p id="revenueMessage" aria-live="polite"></p>
+    </section>
+
+    <!-- R2: Ticket Sales Analysis by Exhibition -->
+    <section class="card">
+      <h2>R2 - Ticket Sales Analysis by Exhibition</h2>
+      <form id="ticketSalesForm">
+        <div class="gridform">
+          <div class="field">
+            <label for="salesExhibition">Exhibition</label>
+            <select id="salesExhibition">
+              <option value="">All exhibitions and general admission</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="salesTicketType">Ticket type</label>
+            <select id="salesTicketType">
+              <option value="">All ticket types</option>
+              <option value="Adult">Adult</option>
+              <option value="Child">Child</option>
+              <option value="Student">Student</option>
+              <option value="Senior">Senior</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="salesStart">Visit date from</label>
+            <input id="salesStart" type="date">
+          </div>
+          <div class="field">
+            <label for="salesEnd">Visit date to</label>
+            <input id="salesEnd" type="date">
+          </div>
+        </div>
+        <div class="formfooter">
+          <button class="btn" type="submit">Generate ticket sales report</button>
+        </div>
+      </form>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Exhibition</th><th>Tickets sold</th>
+              <th>Unique visitors</th><th>Revenue ($)</th>
+            </tr>
+          </thead>
+          <tbody id="ticketSalesRows"></tbody>
+        </table>
+      </div>
+      <p id="ticketSalesMessage" aria-live="polite"></p>
+    </section>
+
+    <!-- R3: Gift Shop Inventory and Low Stock -->
+    <section class="card">
+      <h2>R3 - Gift Shop Inventory and Low Stock</h2>
+      <form id="inventoryForm">
+        <div class="gridform">
+          <div class="field">
+            <label for="inventoryCategory">Product category</label>
+            <select id="inventoryCategory">
+              <option value="">All categories</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="inventoryThreshold">Low-stock threshold (units)</label>
+            <input id="inventoryThreshold" type="number"
+                   min="1" step="1" value="5" required>
+          </div>
+          <div class="field">
+            <label for="inventoryStock">Show</label>
+            <select id="inventoryStock">
+              <option value="all">All products</option>
+              <option value="low">Low-stock products only</option>
+            </select>
+          </div>
+        </div>
+        <div class="formfooter">
+          <button class="btn" type="submit">Generate inventory report</button>
+        </div>
+      </form>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th><th>Category</th><th>Units in stock</th>
+              <th>Stock status</th><th>Active status</th>
+              <th>Inventory value ($)</th><th>Units sold</th>
+              <th>Sales revenue ($)</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryRows"></tbody>
+        </table>
+      </div>
+      <p id="inventoryMessage" aria-live="polite"></p>
+    </section>
   </main>
-  <script defer="" src="/js/common.js">
-  </script>
-  <script defer="" src="/js/reports.js">
-  </script>
- </body>
+  <script defer src="/js/common.js"></script>
+  <script defer src="/js/reports.js"></script>
+</body>
 </html>
