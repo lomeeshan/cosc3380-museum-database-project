@@ -1,25 +1,69 @@
+-- =====================================================================
+-- reports.sql  -  Data reports for MuseumDatabase
+-- Run in MySQL Workbench after schema.sql, triggers.sql and seed.sql.
+--
+-- Reports 1 and 2 use a date range (@StartDate / @EndDate) so the user
+-- can pick a period. In the Express routes, replace the variables with ?
+-- and pass the dates from the request (format YYYY-MM-DD).
+-- =====================================================================
 
 USE MuseumDatabase;
 
+
+-- ---------------------------------------------------------------------
+-- REPORT 1: Combined Monthly Revenue (tickets + gift shop)
+-- API: GET /api/reports/combined-revenue
+-- For each month: tickets sold and ticket revenue, completed gift shop
+-- sales and gift shop revenue, and the combined total.
+-- Refunded gift shop sales are excluded. Months with sales in only one
+-- area still appear (the other area shows 0).
+-- ---------------------------------------------------------------------
 SET @StartDate = '2026-01-01';
 SET @EndDate   = '2026-12-31';
 
 SELECT
-    DATE_FORMAT(t.TicketTime, '%Y-%m')                                AS SaleMonth,
-    COUNT(*)                                                          AS TicketsSold,
-    SUM(t.TicketPrice)                                                AS TotalRevenue,
-    ROUND(AVG(t.TicketPrice), 2)                                      AS AvgTicketPrice,
-    SUM(CASE WHEN t.TicketType = 'Adult'   THEN t.TicketPrice ELSE 0 END) AS AdultRevenue,
-    SUM(CASE WHEN t.TicketType = 'Child'   THEN t.TicketPrice ELSE 0 END) AS ChildRevenue,
-    SUM(CASE WHEN t.TicketType = 'Student' THEN t.TicketPrice ELSE 0 END) AS StudentRevenue,
-    SUM(CASE WHEN t.TicketType = 'Senior'  THEN t.TicketPrice ELSE 0 END) AS SeniorRevenue
-FROM TICKET t
-WHERE DATE(t.TicketTime) BETWEEN @StartDate AND @EndDate
-GROUP BY DATE_FORMAT(t.TicketTime, '%Y-%m')
-ORDER BY SaleMonth;
+    m.SaleMonth,
+    COALESCE(t.TicketsSold, 0)                                  AS TicketsSold,
+    COALESCE(t.TicketRevenue, 0)                                AS TicketRevenue,
+    COALESCE(g.GiftShopSales, 0)                                AS GiftShopSales,
+    COALESCE(g.GiftShopRevenue, 0)                              AS GiftShopRevenue,
+    COALESCE(t.TicketRevenue, 0) + COALESCE(g.GiftShopRevenue, 0) AS TotalRevenue
+FROM (
+    SELECT DATE_FORMAT(TicketTime, '%Y-%m') AS SaleMonth FROM TICKET
+    WHERE DATE(TicketTime) BETWEEN @StartDate AND @EndDate
+    UNION
+    SELECT DATE_FORMAT(SaleDateTime, '%Y-%m') FROM GIFTSHOP_SALE
+    WHERE SaleStatus = 'Completed' AND DATE(SaleDateTime) BETWEEN @StartDate AND @EndDate
+) AS m
+LEFT JOIN (
+    SELECT DATE_FORMAT(TicketTime, '%Y-%m') AS SaleMonth,
+           COUNT(*) AS TicketsSold, SUM(TicketPrice) AS TicketRevenue
+    FROM TICKET
+    WHERE DATE(TicketTime) BETWEEN @StartDate AND @EndDate
+    GROUP BY DATE_FORMAT(TicketTime, '%Y-%m')
+) AS t ON t.SaleMonth = m.SaleMonth
+LEFT JOIN (
+    SELECT DATE_FORMAT(s.SaleDateTime, '%Y-%m') AS SaleMonth,
+           COUNT(DISTINCT s.SaleID) AS GiftShopSales,
+           SUM(si.Quantity * si.UnitPriceAtSale) AS GiftShopRevenue
+    FROM GIFTSHOP_SALE s
+    JOIN GIFTSHOP_SALE_ITEM si ON si.SaleID = s.SaleID
+    WHERE s.SaleStatus = 'Completed'
+      AND DATE(s.SaleDateTime) BETWEEN @StartDate AND @EndDate
+    GROUP BY DATE_FORMAT(s.SaleDateTime, '%Y-%m')
+) AS g ON g.SaleMonth = m.SaleMonth
+ORDER BY m.SaleMonth;
 
 
-
+-- ---------------------------------------------------------------------
+-- REPORT 2: Ticket Sales Analysis by Exhibition
+-- API: GET /api/reports/ticket-sales-by-exhibition
+-- For each exhibition: gallery, status, dates, tickets sold, unique
+-- visitors, revenue, average price, ticket-type counts, and its share
+-- of all ticket revenue in the period.
+-- LEFT JOIN keeps exhibitions with no sales yet (shown as 0).
+-- A final row covers General Admission tickets (no exhibition).
+-- ---------------------------------------------------------------------
 SET @StartDate = '2026-01-01';
 SET @EndDate   = '2026-12-31';
 
@@ -31,7 +75,7 @@ SELECT
         (SELECT SUM(TicketPrice) FROM TICKET
          WHERE DATE(TicketTime) BETWEEN @StartDate AND @EndDate), 0), 1) AS PctOfTotalRevenue
 FROM (
-    
+    -- one row per exhibition
     SELECT
         ex.ExhibitionID,
         ex.ExhibitionTitle,
@@ -57,7 +101,7 @@ FROM (
 
     UNION ALL
 
-    
+    -- general admission tickets (ExhibitionID is NULL)
     SELECT
         NULL, 'General Admission (no exhibition)', NULL, NULL, NULL, NULL,
         COUNT(t.TicketID),
@@ -75,6 +119,15 @@ FROM (
 ORDER BY (ExhibitionID IS NULL), Revenue DESC, ExhibitionTitle;
 
 
+-- ---------------------------------------------------------------------
+-- REPORT 3: Gift Shop Inventory and Low Stock
+-- API: GET /api/reports/giftshop-inventory
+-- Every product with its current stock, stock status, inventory value,
+-- and sales history (completed sales only - refunds are excluded).
+-- StockStatus: 'Out of Stock' (0), 'Low Stock' (below 5, the same limit
+-- as the deactivation trigger), or 'In Stock'.
+-- Products needing attention are listed first.
+-- ---------------------------------------------------------------------
 SELECT
     p.ProductID,
     p.ProductName,
@@ -93,7 +146,7 @@ SELECT
     sold.LastSoldOn
 FROM GIFTSHOP_PRODUCT p
 LEFT JOIN (
-    
+    -- sales totals per product, completed sales only
     SELECT
         si.ProductID,
         SUM(si.Quantity)                     AS UnitsSold,
