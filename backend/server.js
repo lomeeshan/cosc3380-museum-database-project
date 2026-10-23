@@ -56,6 +56,11 @@ app.use('/api/entities', require('./routes/entities'));
 // Eeshan's ticket purchase routes
 app.use('/api/tickets', require('./routes/tickets'));
 
+
+   // Zain's query and report routes
+   app.use('/api/queries', require('./routes/queries'));
+   app.use('/api/reports', require('./routes/reports'));
+
 // Eeshan's sale routes
 app.use('/api/sales', require('./routes/sales'));
 
