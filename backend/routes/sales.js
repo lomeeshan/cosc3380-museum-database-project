@@ -71,7 +71,7 @@ router.post('/', async (req, res, next) => {
     `, [req.user.employeeId, paymentMethod]);
 
     let total = 0;
-
+    const lowStockAlerts = [];
     for (const item of items) {
       const productId = Number(item.productId);
       const quantity = Number(item.quantity);
@@ -93,16 +93,26 @@ router.post('/', async (req, res, next) => {
         throw error;
       }
 
-      // Get the product's current price.
+    // Check the product after the inventory trigger executes.
       const [products] = await connection.execute(`
-        SELECT CurrentPrice
+        SELECT ProductName, CurrentPrice, QuantityInStock, IsActive
         FROM GIFTSHOP_PRODUCT
         WHERE ProductID = ?
       `, [productId]);
 
-      const price = Number(products[0].CurrentPrice);
+      const product = products[0];
+      const price = Number(product.CurrentPrice);
 
-      // Record the item purchased.
+      // Check whether the trigger deactivated the product.
+      if (Number(product.IsActive) === 0 &&
+          Number(product.QuantityInStock) < 5) {
+        lowStockAlerts.push({
+          productName: product.ProductName,
+          quantityInStock: Number(product.QuantityInStock)
+        });
+      }
+
+      // Record the item purchased
       await connection.execute(`
         INSERT INTO GIFTSHOP_SALE_ITEM
           (SaleID, ProductID, Quantity, UnitPriceAtSale)
@@ -115,10 +125,11 @@ router.post('/', async (req, res, next) => {
     await connection.commit();
 
     res.status(201).json({
-      message: 'Sale completed',
-      saleId: sale.insertId,
-      total: Number(total.toFixed(2))
-    });
+  message: 'Sale completed',
+  saleId: sale.insertId,
+  total: Number(total.toFixed(2)),
+  lowStockAlerts
+});
 
   } catch (error) {
     if (connection) {

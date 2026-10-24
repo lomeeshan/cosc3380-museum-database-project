@@ -59,6 +59,11 @@ app.use('/api/tickets', require('./routes/tickets'));
 // Eeshan's sale routes
 app.use('/api/sales', require('./routes/sales'));
 
+// Museum database queries
+app.use('/api/queries', require('./routes/queries'));
+
+// Museum database reports
+app.use('/api/reports', require('./routes/reports'));
 
 app.use('/api', (req, res) => {
     res.status(404).json({

@@ -18,20 +18,38 @@ function validVisitDate(value) {
 router.get('/', async (req, res, next) => {
     try {
         const [rows] = await db.query(`
-            SELECT t.TicketID, t.TicketTime, t.VisitDate,
-                   t.ExpirationDateTime, t.TicketType, t.TicketPrice,
-                   CASE WHEN t.ExpirationDateTime IS NULL THEN 'Unknown'
-                        WHEN NOW() >= t.ExpirationDateTime THEN 'Expired'
-                        ELSE 'Valid' END AS TicketStatus,
-                   CONCAT(v.FirstName, ' ', v.LastName) AS VisitorName,
-                   e.ExhibitionTitle
+            SELECT
+                t.TicketID,
+                DATE_FORMAT(t.TicketTime, '%b %e, %Y %h:%i %p') AS TicketTime,
+                DATE_FORMAT(t.VisitDate, '%b %e, %Y') AS VisitDate,
+                DATE_FORMAT(t.ExpirationDateTime, '%b %e, %Y %h:%i %p') AS ExpirationDateTime,
+                t.TicketType,
+                t.TicketPrice,
+
+                CASE
+                    WHEN t.ExpirationDateTime IS NULL THEN 'Unknown'
+                    WHEN NOW() >= t.ExpirationDateTime THEN 'Expired'
+                    ELSE 'Valid'
+                END AS TicketStatus,
+
+                CONCAT(v.FirstName, ' ', v.LastName) AS VisitorName,
+                e.ExhibitionTitle
+
             FROM TICKET t
-            JOIN VISITOR v ON t.VisitorID = v.VisitorID
-            LEFT JOIN EXHIBITION e ON t.ExhibitionID = e.ExhibitionID
-            ORDER BY t.TicketTime DESC LIMIT 150
+            JOIN VISITOR v
+                ON t.VisitorID = v.VisitorID
+            LEFT JOIN EXHIBITION e
+                ON t.ExhibitionID = e.ExhibitionID
+
+            ORDER BY t.TicketTime DESC
+            LIMIT 150
         `);
+
         res.json(rows);
-    } catch (error) { next(error); }
+
+    } catch (error) {
+        next(error);
+    }
 });
 
 router.post('/', async (req, res, next) => {

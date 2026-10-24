@@ -40,6 +40,15 @@ let records = [];
 let editing = null;
 let allowed = false;
 
+function formatDate(value) {
+  if (!value) return '—';
+
+  const date = String(value).slice(0, 10);
+  const [year, month, day] = date.split('-');
+
+  return `${month}/${day}/${year}`;
+}
+
 async function fillSelect(select, collection) {
   const rows = await Museum.api(`/api/entities/${collection}`);
   const key = collection === 'collections' ? 'CollectionID' : 'GalleryID';
@@ -113,9 +122,15 @@ async function showRecords() {
     const tr = document.createElement('tr');
     for (const field of columns) {
       const td = document.createElement('td');
-      td.textContent = item[field] ?? '—';
-      tr.append(td);
-    }
+
+    if (field === 'StartDate' || field === 'EndDate') {
+      td.textContent = formatDate(item[field]);
+  } else {
+    td.textContent = item[field] ?? '—';
+  }
+
+  tr.append(td);
+}
     if (allowed) {
       const td = document.createElement('td');
       const edit = document.createElement('button');
@@ -124,8 +139,16 @@ async function showRecords() {
       edit.onclick = () => {
         editing = item[page.id];
         for (const [field] of page.fields) {
-          document.getElementById(`field-${field}`).value = item[field] ?? '';
-        }
+          const input = document.getElementById(`field-${field}`);
+
+        if (field === 'StartDate' || field === 'EndDate') {
+            input.value = item[field]
+              ? String(item[field]).slice(0, 10)
+              : '';
+        } else {
+          input.value = item[field] ?? '';
+      }
+    }
         document.getElementById('formTitle').textContent = 'Edit record #' + editing;
         window.scrollTo(0, 0);
       };

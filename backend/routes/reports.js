@@ -1,7 +1,9 @@
 const express = require('express');
 const db = require('../db/connection');
+const { requireLogin } = require('../middleware/auth');
 
 const router = express.Router();
+router.use(requireLogin);
 
 const DEFAULT_THRESHOLD = 5; 
 
