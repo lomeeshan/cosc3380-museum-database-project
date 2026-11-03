@@ -56,6 +56,9 @@ app.use('/api/customer', require('./routes/customer'));
 // Customer ticket purchases and history
 app.use('/api/customer/tickets', require('./routes/customerTickets'));
 
+// Curator-only artwork maintenance
+app.use('/api/artworks', require('./routes/artworkMaintenance'));
+
 // Alaric's crud routes
 app.use('/api/entities', require('./routes/entities'));
 

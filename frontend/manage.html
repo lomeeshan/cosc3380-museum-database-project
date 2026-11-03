@@ -35,6 +35,12 @@
     <p aria-live="polite" id="formStatus">
     </p>
    </div>
+   <div
+    id="maintenanceAlert"
+    class="notice error hidden"
+    role="status"
+    aria-live="polite">
+</div>
    <div class="card">
     <h2>
      Records
@@ -52,6 +58,35 @@
     <p aria-live="polite" id="listStatus">
     </p>
    </div>
+
+<!-- Artwork Maintenance Work Orders -->
+<section id="maintenanceOrders" class="card hidden">
+  <h2>Artwork Maintenance Work Orders</h2>
+
+  <p class="muted">
+    Automatically created when an artwork requires
+    maintenance and updated when maintenance is completed.
+  </p>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Work Order</th>
+          <th>Artwork</th>
+          <th>Reported At</th>
+          <th>Resolved At</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody id="maintenanceOrderRows"></tbody>
+    </table>
+  </div>
+
+  <p id="maintenanceOrderStatus" aria-live="polite"></p>
+</section>
+
   </main>
   <script defer="" src="/js/common.js">
   </script>

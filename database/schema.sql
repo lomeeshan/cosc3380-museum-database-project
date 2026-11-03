@@ -86,6 +86,8 @@ CREATE TABLE ARTWORK (
     Medium VARCHAR(100) NOT NULL,
     Dimensions VARCHAR(100),
     Description VARCHAR(500),
+    NeedsMaintenance BOOLEAN NOT NULL DEFAULT 0,
+    IsActive BOOLEAN NOT NULL DEFAULT 1,
 
     PRIMARY KEY (ArtworkID),
 
@@ -93,6 +95,25 @@ CREATE TABLE ARTWORK (
         REFERENCES COLLECTION(CollectionID)
         ON DELETE RESTRICT
         ON UPDATE CASCADE
+);
+
+-- Maintain a permanent history of artwork maintenance.
+CREATE TABLE ARTWORK_MAINTENANCE_LOG (
+    MaintenanceID INT UNSIGNED AUTO_INCREMENT,
+    ArtworkID INT UNSIGNED NOT NULL,
+    ReportedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ResolvedAt DATETIME NULL,
+    Status VARCHAR(20) NOT NULL DEFAULT 'Open',
+
+    PRIMARY KEY (MaintenanceID),
+
+    FOREIGN KEY (ArtworkID)
+        REFERENCES ARTWORK(ArtworkID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT chk_artwork_maintenance_status
+        CHECK (Status IN ('Open', 'Resolved'))
 );
 
 CREATE TABLE EXHIBITION (
