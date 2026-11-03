@@ -157,6 +157,32 @@ CREATE TABLE EMPLOYEE_ACCOUNT (
         ON UPDATE CASCADE
 );
 
+-- Customer accounts for registered museum visitors
+CREATE TABLE CUSTOMER_ACCOUNT (
+    AccountID INT UNSIGNED AUTO_INCREMENT,
+    VisitorID INT UNSIGNED NOT NULL,
+    RoleID INT UNSIGNED NOT NULL,
+    Email VARCHAR(254) NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    AccountStatus VARCHAR(30) NOT NULL DEFAULT 'Active',
+    CreatedDateTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (AccountID),
+
+    UNIQUE KEY uq_customer_visitor (VisitorID),
+    UNIQUE KEY uq_customer_email (Email),
+
+    FOREIGN KEY (VisitorID)
+        REFERENCES VISITOR(VisitorID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    FOREIGN KEY (RoleID)
+        REFERENCES USER_ROLE(RoleID)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+);
+
 CREATE TABLE TICKET (
     TicketID INT UNSIGNED AUTO_INCREMENT,
     VisitorID INT UNSIGNED NOT NULL,
