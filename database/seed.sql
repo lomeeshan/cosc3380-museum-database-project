@@ -1,5 +1,11 @@
 USE MuseumDatabase;
 
+INSERT INTO USER_ROLE (RoleName, RoleDescription) VALUES
+('Admin', 'Manages museum operations and reports'),
+('Curator', 'Manages artwork maintenance'),
+('Sales Staff', 'Manages tickets and gift shop sales'),
+('Customer', 'Registered museum visitor');
+
 INSERT INTO COLLECTION (CollectionID, CollectionName, Description) VALUES
 (1, 'European Art',               'Painting and sculpture from Europe, Renaissance through Impressionism.'),
 (2, 'American Art',               'American painting and sculpture from the 18th to 20th centuries.'),

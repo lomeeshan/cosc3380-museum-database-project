@@ -14,8 +14,21 @@ function requireLogin(req, res, next) {
   const token = req.cookies[COOKIE_NAME];
   if (!token) return res.status(401).json({ error: 'Please log in.' });
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
-    next();
+    const user = jwt.verify(token, process.env.JWT_SECRET, {
+  algorithms: ['HS256']
+});
+
+if (
+  !Number.isSafeInteger(user.employeeId) ||
+  !['Admin', 'Curator', 'Sales Staff'].includes(user.role)
+) {
+  return res.status(401).json({
+    error: 'Staff login required.'
+  });
+}
+
+req.user = user;
+next();
   } catch {
     res.status(401).json({ error: 'Session expired. Please log in again.' });
   }
