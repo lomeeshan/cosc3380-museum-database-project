@@ -77,7 +77,7 @@ async function buildForm() {
       if (kind === 'collections' || kind === 'galleries') {
         await fillSelect(input, kind);
       } else {
-        const choices = kind === 'status' ? ['Scheduled', 'Active', 'Closed'] : ['1', '0'];
+        const choices = kind === 'status' ? ['Upcoming', 'Active', 'Completed'] : ['1', '0'];
         for (const value of choices) {
           const option = document.createElement('option');
           option.value = value;
