@@ -14,7 +14,7 @@ router.get('/', async (req, res, next) => {
     const [rows] = await db.query(`
       SELECT
         s.SaleID,
-        s.SaleDateTime,
+        DATE_FORMAT(s.SaleDateTime, '%Y-%m-%dT%H:%i:%sZ') AS SaleDateTime,
         s.PaymentMethod,
         s.SaleStatus,
         COALESCE(SUM(i.Quantity * i.UnitPriceAtSale), 0) AS Total
@@ -30,7 +30,25 @@ router.get('/', async (req, res, next) => {
       LIMIT 100
     `);
 
-    res.json(rows);
+const formatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Chicago',
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true
+});
+
+const formattedRows = rows.map(row => ({
+  ...row,
+  SaleDateTime: row.SaleDateTime
+    ? formatter.format(new Date(row.SaleDateTime))
+    : null
+}));
+
+res.json(formattedRows);
+
   } catch (error) {
     next(error);
   }
