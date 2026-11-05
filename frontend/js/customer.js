@@ -90,7 +90,10 @@
         opt.value=ex.ExhibitionID;
         opt.textContent=ex.ExhibitionTitle+' ('+ex.StartDate+' to '+ex.EndDate+')';
         select.append(opt);
-        const visitDateInput=document.getElementById('visitDate');
+        
+
+      });
+      const visitDateInput=document.getElementById('visitDate');
 function updateVisitDateRange(){
   const chosen=available.find(ex=>String(ex.ExhibitionID)===select.value);
   if(!chosen){ visitDateInput.value=''; return; }
@@ -101,8 +104,6 @@ function updateVisitDateRange(){
 }
 select.addEventListener('change',updateVisitDateRange);
 updateVisitDateRange();
-
-      });
       await reload();
     } catch(err) { notify(err.message,true); }
 
