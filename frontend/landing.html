@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Museum — Explore & Tickets</title><link rel="stylesheet" href="/css/styles.css"></head>
+<body><main class="content" style="max-width:1000px;margin:auto;padding:24px">
+  <h1>Welcome to the Museum</h1>
+  <p>Browse our exhibitions, discover artworks, and reserve a demo admission ticket.</p>
+  <nav class="actions"><a class="btn" href="/customer-register.html">Create Customer Account</a>
+    <a class="btn secondary" href="/customer-login.html">Customer Sign In</a>
+    <a class="btn secondary" href="/login.html">Staff Sign In</a></nav>
+  <section class="card"><h2>Exhibitions</h2><div id="exhibitions" class="cards">Loading...</div></section>
+  <section class="card"><h2>Artworks</h2><div id="artworks" class="cards">Loading...</div></section>
+</main><script>
+async function draw(path,target,show){
+  const box=document.getElementById(target);
+  try{
+    const response=await fetch(path);if(!response.ok)throw new Error('Unable to load');
+    const rows=await response.json();box.replaceChildren();
+    if(!rows.length){box.textContent='No records available.';return;}
+    for(const row of rows){const card=document.createElement('article');
+      card.className='card';const title=document.createElement('h3');
+      const detail=document.createElement('p');
+      title.textContent=show==='ex'?row.ExhibitionTitle:row.Title;
+      detail.textContent=show==='ex'?
+        row.GalleryName+' | '+row.StartDate+' to '+row.EndDate+' | '+row.Status:
+        (row.Medium||'Artwork')+' | '+(row.CreationYear||'');
+      card.append(title,detail);box.append(card);
+    }
+  }catch(e){box.textContent='Unable to load museum information.';}
+}
+draw('/api/public/exhibitions','exhibitions','ex');
+draw('/api/public/artworks','artworks','art');
+</script></body></html>

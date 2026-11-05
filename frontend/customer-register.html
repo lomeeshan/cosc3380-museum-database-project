@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Register — Museum</title><link rel="stylesheet" href="/css/styles.css"></head>
+<body data-customer-page="register"><main class="login-wrap"><section class="login-card">
+<h1>Create Customer Account</h1><p>Already registered? <a href="/customer-login.html">Sign in</a>.</p>
+<form id="registerForm">
+<div class="field"><label for="firstName">First name</label><input id="firstName" maxlength="80" required></div>
+<div class="field"><label for="lastName">Last name</label><input id="lastName" maxlength="80" required></div>
+<div class="field"><label for="email">Email</label><input id="email" type="email" maxlength="254" required></div>
+<div class="field"><label for="password">Password (at least 12 characters)</label><input id="password" type="password" minlength="12" autocomplete="new-password" required></div>
+<button class="btn" type="submit">Create account</button></form>
+<p id="customerMessage" aria-live="polite"></p><p><a href="/landing.html">Back to museum</a></p>
+</section></main><script defer src="/js/customer.js"></script></body></html>

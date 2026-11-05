@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Museum Tickets</title><link rel="stylesheet" href="/css/styles.css"></head>
+<body data-customer-page="dashboard"><main class="content" style="max-width:900px;margin:auto;padding:24px">
+<div class="actions"><h1>My Museum Account</h1><button id="customerLogout" class="btn secondary">Sign out</button>
+<a class="btn secondary" href="/landing.html">Browse museum</a></div>
+<p id="welcome"></p>
+<section class="card"><h2>Reserve a Demo Ticket</h2>
+<p>No actual payment is collected. Museum staff will verify the booking.</p>
+<form id="purchaseForm">
+<div class="gridform">
+<div class="field"><label for="exhibitionId">Exhibition</label><select id="exhibitionId" required></select></div>
+<div class="field"><label for="ticketType">Ticket type</label><select id="ticketType" required>
+<option>Adult</option><option>Student</option><option>Child</option><option>Senior</option></select></div>
+<div class="field"><label for="visitDate">Visit date</label><input id="visitDate" type="date" required></div>
+</div><button class="btn" type="submit">Confirm demo ticket</button></form>
+<p id="customerMessage" aria-live="polite"></p>
+</section><section class="card"><h2>My Tickets</h2><div class="tablewrap"><table>
+<thead><tr><th>Ticket</th><th>Exhibition</th><th>Type</th><th>Visit date</th><th>Price</th></tr></thead>
+<tbody id="myTickets"></tbody></table></div></section>
+</main><script defer src="/js/customer.js"></script></body></html>
