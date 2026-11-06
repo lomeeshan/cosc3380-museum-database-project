@@ -36,7 +36,7 @@ window.Museum = {
       <a class="navlink" href="/manage.html?entity=exhibitions">Exhibitions</a>
       <div class="navgroup">Operations</div><a class="navlink" href="/manage.html?entity=visitors">Visitors</a>
       <a class="navlink" href="/tickets.html">Tickets</a><a class="navlink" href="/giftshop.html">Gift Shop</a>
-      ${this.user.role === 'Admin' ? `<div class="navgroup">Analysis</div> <a class="navlink" href="/queries.html">Queries</a> <a class="navlink" href="/reports.html">Reports</a> ` : ''}</nav>`;
+      ${this.user.role === 'Admin' ? '<div class="navgroup">Analysis</div><a class="navlink" href="/reports.html">Reports</a>' : ''}</nav>`;
     const main=document.createElement('div');main.className='main';
     const bar=document.createElement('header');bar.className='topbar';
     const span=document.createElement('span');span.textContent='Museum Management System';
@@ -46,6 +46,18 @@ window.Museum = {
     logout.onclick=async()=>{await this.api('/api/auth/logout',{method:'POST'});location.replace('/login.html');};
     controls.append(profile,logout);bar.append(span,controls);main.append(bar);
     const content=document.getElementById('content');content.className='content';main.append(content);
+    // Menu visibility is cosmetic; API route authorization must also enforce roles.
+    // Admin-only analysis navigation is inserted above based on the authenticated role.
+    if (!['Admin', 'Curator'].includes(this.user.role)) {
+      sidebar.querySelector('a[href="/manage.html?entity=artists"]')?.remove();
+      sidebar.querySelector('a[href="/manage.html?entity=artworks"]')?.remove();
+      sidebar.querySelector('a[href="/manage.html?entity=exhibitions"]')?.remove();
+    }
+    if (!['Admin', 'Sales Staff'].includes(this.user.role)) {
+      sidebar.querySelector('a[href="/tickets.html"]')?.remove();
+      sidebar.querySelector('a[href="/giftshop.html"]')?.remove();
+      sidebar.querySelector('a[href="/manage.html?entity=visitors"]')?.remove();
+    }
     layout.append(sidebar,main);document.body.replaceChildren(layout);
     for(const link of sidebar.querySelectorAll('a')){
       if(link.getAttribute('href')===location.pathname+location.search)link.classList.add('active');
@@ -53,3 +65,4 @@ window.Museum = {
     return true;
   }
 };
+
