@@ -74,6 +74,9 @@ app.use('/api/queries', require('./routes/queries'));
 // Museum database reports
 app.use('/api/reports', require('./routes/reports'));
 
+// Public exhibition and artwork listings
+app.use('/api/public', require('./routes/public'));
+
 app.use('/api', (req, res) => {
     res.status(404).json({
         error: 'Unknown API endpoint'

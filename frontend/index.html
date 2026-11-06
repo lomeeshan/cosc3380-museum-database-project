@@ -67,20 +67,50 @@
      Quick actions
     </h2>
     <div class="actions">
-     <a class="btn" href="/tickets.html">
+     <a id="dashboardSellTicketLink" class="btn" href="/tickets.html">
       Sell Ticket
      </a>
-     <a class="btn secondary" href="/giftshop.html">
+     <a id="dashboardGiftShopLink" class="btn secondary" href="/giftshop.html">
       Gift Shop Sale
      </a>
-     <a class="btn secondary" href="/queries.html">
+     <a id="dashboardQueriesLink" class="btn secondary" href="#dashboardQueries">
       Search Records
      </a>
-     <a class="btn secondary" href="/reports.html">
+     <a id="dashboardReportsLink" class="btn secondary" href="/reports.html">
       View Reports
      </a>
     </div>
    </div>
+   <section class="card" id="dashboardQueries">
+  <h2>Explore Museum Records</h2>
+  <div class="actions" role="tablist" aria-label="Museum queries">
+    <button type="button" class="btn secondary" data-query-tab="artistPanel">Artworks by Artist</button>
+    <button type="button" class="btn secondary" data-query-tab="staffPanel">Exhibition Staff</button>
+    <button type="button" class="btn secondary" data-query-tab="exhibitPanel">Artworks in Exhibition</button>
+  </div>
+  <div id="artistPanel" data-query-panel>
+    <form id="artistForm" class="actions">
+      <label for="artistId">Artist</label><select id="artistId" required></select>
+      <button class="btn">Search artworks</button>
+    </form>
+    <div class="tablewrap"><table><thead><tr><th>Artist</th><th>Artwork ID</th><th>Title</th><th>Medium</th></tr></thead><tbody id="artistRows"></tbody></table></div>
+  </div>
+  <div id="staffPanel" data-query-panel hidden>
+    <form id="employeeExhibitionForm" class="actions">
+      <label for="employeeExhibitionId">Exhibition</label><select id="employeeExhibitionId" required></select>
+      <button class="btn">Find staff</button>
+    </form>
+    <div class="tablewrap"><table><thead><tr><th>Exhibition</th><th>Employee ID</th><th>Employee</th><th>Job Title</th><th>Assignment</th></tr></thead><tbody id="employeeExhibitionRows"></tbody></table></div>
+  </div>
+  <div id="exhibitPanel" data-query-panel hidden>
+    <form id="artworkExhibitionForm" class="actions">
+      <label for="artworkExhibitionId">Exhibition</label><select id="artworkExhibitionId" required></select>
+      <button class="btn">Find artworks</button>
+    </form>
+    <div class="tablewrap"><table><thead><tr><th>Exhibition</th><th>Artwork ID</th><th>Title</th><th>Medium</th></tr></thead><tbody id="artworkExhibitionRows"></tbody></table></div>
+  </div>
+  <p id="queryMessage" aria-live="polite"></p>
+</section>
    <p aria-live="polite" id="status">
    </p>
   </main>
@@ -90,4 +120,3 @@
   </script>
  </body>
 </html>
-
