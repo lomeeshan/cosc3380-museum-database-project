@@ -1,5 +1,19 @@
 (async () => {
   if (!await Museum.init()) return;
+
+    // Hide dashboard card links based on employee roles
+  const role = Museum.user.role;
+
+  if (!['Admin', 'Curator'].includes(role)) {
+    document.querySelector('.cards a[href="/manage.html?entity=artworks"]')?.remove();
+    document.querySelector('.cards a[href="/manage.html?entity=exhibitions"]')?.remove();
+  }
+
+  if (!['Admin', 'Sales Staff'].includes(role)) {
+    document.querySelector('.cards a[href="/manage.html?entity=visitors"]')?.remove();
+    document.querySelector('.cards a[href="/giftshop.html"]')?.remove();
+  }
+
   const stats = [['artworks','countArtworks'],['exhibitions','countExhibitions'],
     ['visitors','countVisitors'],['products','countProducts']];
   for (const [name,id] of stats) {
