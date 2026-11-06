@@ -1,162 +1,133 @@
 (async () => {
   if (!await Museum.init()) return;
-
-  // API CONTRACT for Zain's backend/routes/reports.js:
-  // GET /api/reports/combined-revenue
-  //   Params: source=tickets|giftshop|combined, startDate, endDate
-  //   Array fields: SaleMonth, TicketRevenue, GiftShopRevenue, TotalRevenue
-  // GET /api/reports/ticket-sales-by-exhibition
-  //   Params: exhibitionId, ticketType, startDate, endDate (VisitDate)
-  //   Array fields: ExhibitionTitle, TicketsSold, UniqueVisitors, Revenue
-  // GET /api/reports/giftshop-inventory
-  //   Params: category, threshold, stock=all|low
-  //   Array fields: ProductName, Category, QuantityInStock,
-  //     StockStatus, ProductStatus, InventoryValue, UnitsSold, SalesRevenue
-  // Each endpoint must return an array, or [] when no matches exist.
-  // Zain must mount the router at /api/reports in backend/server.js.
-
-  const get = id => document.getElementById(id);
-  const value = id => get(id).value;
-
-  function validateDates(startId, endId) {
-    const start = value(startId);
-    const end = value(endId);
-    if (start && end && start > end) {
+  if (Museum.user.role !== 'Admin') {
+    document.getElementById('content').textContent = 'Reports are for administrators only.';
+    return;
+  }
+  const el = id => document.getElementById(id);
+  const value = id => el(id).value;
+  const money = n => '$' + Number(n || 0).toFixed(2);
+  const sum = (rows, key) => rows.reduce((t, row) => t + Number(row[key] || 0), 0);
+  function urlWithFilters(url, filters) {
+    const p = new URLSearchParams();
+    for (const [k,v] of Object.entries(filters)) if (v !== '' && v != null) p.set(k,v);
+    return url + (p.toString() ? '?' + p : '');
+  }
+  function dateRange(startId, endId) {
+    const startDate=value(startId), endDate=value(endId);
+    if (startDate && endDate && startDate>endDate) {
       throw new Error('Start date cannot be after end date.');
     }
+    return {startDate,endDate};
+  }
+  function fillTable(target, cols, rows, currencyColumns=[]) {
+    Museum.table(target,cols,rows.map(row => {
+      const copy={...row};
+      for (const col of currencyColumns) if(copy[col]!=null) copy[col]=Number(copy[col]).toFixed(2);
+      return copy;
+    }));
   }
 
-  function pathWithFilters(path, filters) {
-    const params = new URLSearchParams();
-    for (const [key, val] of Object.entries(filters)) {
-      if (val !== '' && val !== null && val !== undefined) {
-        params.set(key, val);
-      }
-    }
-    return path + (params.toString() ? '?' + params.toString() : '');
+  async function getReport(url,target,cols,currencyColumns,messageId) {
+    const rows=await Museum.api(url);
+    if(!Array.isArray(rows)) throw new Error('Unexpected report data.');
+    fillTable(target,cols,rows,currencyColumns);
+    Museum.notify(messageId,rows.length+' result row(s).');
+    return rows;
   }
-
-  function formatMoney(rows, fields) {
-    return rows.map(row => {
-      const result = { ...row };
-      for (const field of fields) {
-        if (result[field] != null) {
-          const amount = Number(result[field]);
-          if (Number.isFinite(amount)) result[field] = amount.toFixed(2);
-        }
-      }
-      return result;
-    });
-  }
-
-  async function displayReport(url, tableId, fields, moneyFields, messageId) {
-    const rows = await Museum.api(url);
-    if (!Array.isArray(rows)) {
-      throw new Error('The report API must return an array.');
-    }
-    Museum.table(tableId, fields, formatMoney(rows, moneyFields));
-    Museum.notify(messageId, rows.length + ' matching row(s).');
-  }
-
-  async function revenueReport() {
-    try {
-      validateDates('revenueStart', 'revenueEnd');
-      const url = pathWithFilters('/api/reports/combined-revenue', {
-        source: value('revenueSource'),
-        startDate: value('revenueStart'),
-        endDate: value('revenueEnd')
+  for (const button of document.querySelectorAll('[data-report-tab]')) {
+    button.onclick=() => {
+      document.querySelectorAll('[data-report-panel]').forEach(panel => {
+        panel.hidden=panel.id !== button.dataset.reportTab;
       });
-      await displayReport(url, 'revenueRows',
-        ['SaleMonth', 'TicketRevenue', 'GiftShopRevenue', 'TotalRevenue'],
-        ['TicketRevenue', 'GiftShopRevenue', 'TotalRevenue'],
-        'revenueMessage');
-    } catch (error) {
-      Museum.notify('revenueMessage', error.message, true);
-    }
-  }
-
-  async function ticketSalesReport() {
-    try {
-      validateDates('salesStart', 'salesEnd');
-      const url = pathWithFilters('/api/reports/ticket-sales-by-exhibition', {
-        exhibitionId: value('salesExhibition'),
-        ticketType: value('salesTicketType'),
-        startDate: value('salesStart'),
-        endDate: value('salesEnd')
+      document.querySelectorAll('[data-report-tab]').forEach(b => {
+        const on=b === button;
+        b.classList.toggle('secondary',!on);
+        b.setAttribute('aria-selected',String(on));
       });
-      await displayReport(url, 'ticketSalesRows',
-        ['ExhibitionTitle', 'TicketsSold', 'UniqueVisitors', 'Revenue'],
-        ['Revenue'], 'ticketSalesMessage');
-    } catch (error) {
-      Museum.notify('ticketSalesMessage', error.message, true);
-    }
+    };
+  }
+  document.querySelector('[data-report-tab]')?.click();
+
+  async function revenue() {
+    try {
+      const url=urlWithFilters('/api/reports/combined-revenue',{
+        source:value('revenueSource'),...dateRange('revenueStart','revenueEnd')
+      });
+      const rows=await getReport(url,'revenueRows',
+        ['SaleMonth','TicketRevenue','GiftShopRevenue','TotalRevenue'],
+        ['TicketRevenue','GiftShopRevenue','TotalRevenue'],'revenueMessage');
+      el('revenueSummary').textContent=rows.length+' month(s) | Ticket sales: '+
+        money(sum(rows,'TicketRevenue'))+' | Gift shop: '+
+        money(sum(rows,'GiftShopRevenue'))+' | Total: '+money(sum(rows,'TotalRevenue'));
+    } catch(err) { Museum.notify('revenueMessage',err.message,true); }
   }
 
-  async function inventoryReport() {
+  async function tickets() {
     try {
-      const threshold = Number(value('inventoryThreshold'));
-      if (!Number.isSafeInteger(threshold) || threshold < 1) {
+      const url=urlWithFilters('/api/reports/ticket-sales-by-exhibition',{
+        exhibitionId:value('salesExhibition'),
+        ticketType:value('salesTicketType'),
+        ...dateRange('salesStart','salesEnd')
+      });
+      const rows=await getReport(url,'ticketSalesRows',
+        ['ExhibitionTitle','TicketsSold','UniqueVisitors','Revenue'],
+        ['Revenue'],'ticketSalesMessage');
+      el('ticketSummary').textContent='Tickets sold: '+sum(rows,'TicketsSold')+
+        ' | Revenue: '+money(sum(rows,'Revenue'))+
+        ' | Exhibition rows: '+rows.length;
+    } catch(err) { Museum.notify('ticketSalesMessage',err.message,true); }
+  }
+  async function inventory() {
+    try {
+      const threshold=Number(value('inventoryThreshold'));
+      if(!Number.isSafeInteger(threshold)||threshold<1) {
         throw new Error('Stock threshold must be a positive whole number.');
       }
-      const url = pathWithFilters('/api/reports/giftshop-inventory', {
-        category: value('inventoryCategory'),
+      const url=urlWithFilters('/api/reports/giftshop-inventory',{
+        category:value('inventoryCategory'),
         threshold,
-        stock: value('inventoryStock')
+        stock:value('inventoryStock'),
+        ...dateRange('inventoryStart','inventoryEnd')
       });
-      await displayReport(url, 'inventoryRows',
-        ['ProductName', 'Category', 'QuantityInStock', 'StockStatus',
-         'ProductStatus', 'InventoryValue', 'UnitsSold', 'SalesRevenue'],
-        ['InventoryValue', 'SalesRevenue'], 'inventoryMessage');
-    } catch (error) {
-      Museum.notify('inventoryMessage', error.message, true);
-    }
+      const rows=await getReport(url,'inventoryRows',
+        ['ProductName','Category','QuantityInStock','StockStatus',
+        'ProductStatus','InventoryValue','UnitsSold','SalesRevenue'],
+        ['InventoryValue','SalesRevenue'],'inventoryMessage');
+      const low=rows.filter(r=>r.StockStatus==='Low Stock'||r.StockStatus==='Out of Stock').length;
+      el('inventorySummary').textContent='Matching products: '+rows.length+
+        ' | Low/out of stock: '+low+
+        ' | Current inventory value: '+money(sum(rows,'InventoryValue'))+
+        ' | Period units sold: '+sum(rows,'UnitsSold')+
+        ' | Period revenue: '+money(sum(rows,'SalesRevenue'));
+    } catch(err) { Museum.notify('inventoryMessage',err.message,true); }
   }
 
-  function addOption(select, id, title) {
-    const item = document.createElement('option');
-    item.value = id;
-    item.textContent = title;
-    select.appendChild(item);
+  function selectOption(select, id, text) {
+    const option=document.createElement('option');
+    option.value=id; option.textContent=text;
+    select.append(option);
   }
-
-  async function loadFilters() {
+  async function filters() {
     try {
-      const exhibitions = await Museum.api('/api/entities/exhibitions');
-      for (const ex of exhibitions) {
-        addOption(get('salesExhibition'), ex.ExhibitionID, ex.ExhibitionTitle);
-      }
-    } catch (error) {
-      Museum.notify('ticketSalesMessage',
-        'Could not load exhibitions: ' + error.message, true);
-    }
-
+      const exhibitions=await Museum.api('/api/entities/exhibitions');
+      exhibitions.forEach(ex=>selectOption(el('salesExhibition'),
+        ex.ExhibitionID,ex.ExhibitionTitle));
+    } catch(err) { Museum.notify('ticketSalesMessage',err.message,true); }
     try {
-      const products = await Museum.api('/api/entities/products');
-      const categories = [...new Set(
-        products.map(p => p.Category).filter(Boolean)
-      )].sort();
-      for (const category of categories) {
-        addOption(get('inventoryCategory'), category, category);
-      }
-    } catch (error) {
-      Museum.notify('inventoryMessage',
-        'Could not load categories: ' + error.message, true);
-    }
+      const products=await Museum.api('/api/entities/products');
+      const categories=[...new Set(products.map(p=>p.Category).filter(Boolean))].sort();
+      categories.forEach(c=>selectOption(el('inventoryCategory'),c,c));
+    } catch(err) { Museum.notify('inventoryMessage',err.message,true); }
   }
-
-  get('revenueForm').addEventListener('submit', event => {
-    event.preventDefault();
-    revenueReport();
-  });
-  get('ticketSalesForm').addEventListener('submit', event => {
-    event.preventDefault();
-    ticketSalesReport();
-  });
-  get('inventoryForm').addEventListener('submit', event => {
-    event.preventDefault();
-    inventoryReport();
-  });
-
-  await loadFilters();
-  await Promise.all([revenueReport(), ticketSalesReport(), inventoryReport()]);
+  const forms=[
+    ['revenueForm',revenue],
+    ['ticketSalesForm',tickets],
+    ['inventoryForm',inventory]
+  ];
+  forms.forEach(([id,fn]) => el(id).addEventListener('submit',e=>{
+    e.preventDefault(); fn();
+  }));
+  await filters();
+  await Promise.all([revenue(),tickets(),inventory()]);
 })();
