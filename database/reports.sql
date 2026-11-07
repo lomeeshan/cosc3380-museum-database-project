@@ -1,4 +1,3 @@
-
 USE MuseumDatabase;
 
 SET @Source    = 'combined';     
@@ -119,9 +118,17 @@ FROM (
 ORDER BY (ExhibitionID IS NULL), Revenue DESC, ExhibitionTitle;
 
 
+-- GIFT SHOP INVENTORY AND LOW STOCK
+-- @StartDate / @EndDate filter ONLY the completed sales counted in
+-- UnitsSold, SalesRevenue and LastSoldOn (the "sold" subquery).
+-- QuantityInStock, StockStatus and InventoryValue are always the
+-- CURRENT stock snapshot and do not change with the date range.
+-- Set both dates to NULL to count all completed sales.
 SET @Category  = NULL;    
 SET @Threshold = 5;       
 SET @Stock     = 'all';  
+SET @StartDate = NULL;
+SET @EndDate   = NULL;
 
 SELECT
     p.ProductID,
@@ -141,7 +148,7 @@ SELECT
     sold.LastSoldOn
 FROM GIFTSHOP_PRODUCT p
 LEFT JOIN (
-    
+    -- Completed sales only, limited to the selected date range
     SELECT
         si.ProductID,
         SUM(si.Quantity)                      AS UnitsSold,
@@ -150,6 +157,8 @@ LEFT JOIN (
     FROM GIFTSHOP_SALE_ITEM si
     JOIN GIFTSHOP_SALE s ON s.SaleID = si.SaleID
     WHERE s.SaleStatus = 'Completed'
+      AND DATE(s.SaleDateTime) BETWEEN COALESCE(@StartDate, '1000-01-01')
+                                   AND COALESCE(@EndDate,   '9999-12-31')
     GROUP BY si.ProductID
 ) AS sold ON sold.ProductID = p.ProductID
 WHERE (@Category IS NULL OR p.Category = @Category)
