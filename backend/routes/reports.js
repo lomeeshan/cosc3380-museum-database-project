@@ -5,12 +5,12 @@ const { requireLogin, requireRole } = require('../middleware/auth');
 const router = express.Router();
 router.use(requireLogin, requireRole('Admin'));
 
-const DEFAULT_THRESHOLD = 5; 
+const DEFAULT_THRESHOLD = 5;
 
 
 function badRequest(message) {
     const error = new Error(message);
-    error.status = 400; 
+    error.status = 400;
     return error;
 }
 
@@ -49,7 +49,6 @@ function readDate(value, name) {
 function readDateRange(query) {
     const startDate = readDate(query.startDate, 'startDate');
     const endDate = readDate(query.endDate, 'endDate');
-
     if (startDate && endDate && startDate > endDate) {
         throw badRequest('startDate must be on or before endDate');
     }
@@ -170,16 +169,16 @@ FROM (
         ex.ExhibitionTitle,
         g.GalleryName,
         ex.Status,
-        DATE_FORMAT(ex.StartDate, '%Y-%m-%d')          AS StartDate,
-        DATE_FORMAT(ex.EndDate, '%Y-%m-%d')            AS EndDate,
-        COUNT(t.TicketID)                              AS TicketsSold,
-        COUNT(DISTINCT t.VisitorID)                    AS UniqueVisitors,
-        COALESCE(SUM(t.TicketPrice), 0)                AS Revenue,
-        ROUND(AVG(t.TicketPrice), 2)                   AS AvgTicketPrice,
-        COALESCE(SUM(t.TicketType = 'Adult'), 0)       AS AdultTickets,
-        COALESCE(SUM(t.TicketType = 'Child'), 0)       AS ChildTickets,
-        COALESCE(SUM(t.TicketType = 'Student'), 0)     AS StudentTickets,
-        COALESCE(SUM(t.TicketType = 'Senior'), 0)      AS SeniorTickets
+        DATE_FORMAT(ex.StartDate, '%Y-%m-%d')     AS StartDate,
+        DATE_FORMAT(ex.EndDate, '%Y-%m-%d')       AS EndDate,
+        COUNT(t.TicketID)                         AS TicketsSold,
+        COUNT(DISTINCT t.VisitorID)               AS UniqueVisitors,
+        COALESCE(SUM(t.TicketPrice), 0)           AS Revenue,
+        ROUND(AVG(t.TicketPrice), 2)              AS AvgTicketPrice,
+        COALESCE(SUM(t.TicketType = 'Adult'), 0)   AS AdultTickets,
+        COALESCE(SUM(t.TicketType = 'Child'), 0)   AS ChildTickets,
+        COALESCE(SUM(t.TicketType = 'Student'), 0) AS StudentTickets,
+        COALESCE(SUM(t.TicketType = 'Senior'), 0)  AS SeniorTickets
     FROM EXHIBITION ex
     JOIN GALLERY g ON g.GalleryID = ex.GalleryID
     LEFT JOIN TICKET t
@@ -221,7 +220,6 @@ router.get('/ticket-sales-by-exhibition', async (req, res) => {
     const { startDate, endDate } = readDateRange(req.query);
 
     const params = [
-       
         startDate, endDate, ticketType, ticketType,
 
         startDate, endDate, ticketType, ticketType,
@@ -239,6 +237,7 @@ router.get('/ticket-sales-by-exhibition', async (req, res) => {
     ]));
 });
 
+
 const GIFTSHOP_INVENTORY_SQL = `
 SELECT
     p.ProductID,
@@ -250,12 +249,12 @@ SELECT
         WHEN p.QuantityInStock = 0 THEN 'Out of Stock'
         WHEN p.QuantityInStock < ? THEN 'Low Stock'
         ELSE 'In Stock'
-    END                                                        AS StockStatus,
+    END                                                      AS StockStatus,
     CASE WHEN p.IsActive = 1 THEN 'Active' ELSE 'Inactive' END AS ProductStatus,
-    p.CurrentPrice * p.QuantityInStock                         AS InventoryValue,
-    COALESCE(sold.UnitsSold, 0)                                AS UnitsSold,
-    COALESCE(sold.SalesRevenue, 0)                             AS SalesRevenue,
-    DATE_FORMAT(sold.LastSoldOn, '%Y-%m-%d %H:%i:%s')          AS LastSoldOn
+    p.CurrentPrice * p.QuantityInStock                       AS InventoryValue,
+    COALESCE(sold.UnitsSold, 0)                              AS UnitsSold,
+    COALESCE(sold.SalesRevenue, 0)                           AS SalesRevenue,
+    DATE_FORMAT(sold.LastSoldOn, '%Y-%m-%d %H:%i:%s')        AS LastSoldOn
 FROM GIFTSHOP_PRODUCT p
 LEFT JOIN (
     SELECT
@@ -266,6 +265,8 @@ LEFT JOIN (
     FROM GIFTSHOP_SALE_ITEM si
     JOIN GIFTSHOP_SALE s ON s.SaleID = si.SaleID
     WHERE s.SaleStatus = 'Completed'
+      AND DATE(s.SaleDateTime) BETWEEN COALESCE(?, '1000-01-01')
+                                   AND COALESCE(?, '9999-12-31')
     GROUP BY si.ProductID
 ) AS sold ON sold.ProductID = p.ProductID
 WHERE (? IS NULL OR p.Category = ?)
@@ -285,12 +286,14 @@ router.get('/giftshop-inventory', async (req, res) => {
         req.query.threshold, 'threshold', 0, 1000000, DEFAULT_THRESHOLD
     );
     const stock = readChoice(req.query.stock, 'stock', ['all', 'low'], 'all');
+    const { startDate, endDate } = readDateRange(req.query);
 
     const params = [
-        threshold,              
-        category, category,    
-        stock, threshold,       
-        threshold               
+        threshold,
+        startDate, endDate,
+        category, category,
+        stock, threshold,
+        threshold
     ];
 
     const [rows] = await db.query(GIFTSHOP_INVENTORY_SQL, params);
@@ -300,6 +303,5 @@ router.get('/giftshop-inventory', async (req, res) => {
         'UnitsSold', 'SalesRevenue'
     ]));
 });
-
 
 module.exports = router;
