@@ -66,3 +66,15 @@ th { background: #f5f8fa; }
   .content { padding: 18px 12px; }
   .topbar { padding: 12px; }
 }
+[hidden] { display: none !important; }
+.report-tabs { margin: 18px 0 22px; flex-wrap: wrap; gap: 10px; }
+.report-tabs button[aria-selected="true"] { font-weight: 700; }
+.report-summary { margin: 18px 0; padding: 12px 14px; font-weight: 600; line-height: 1.6; }
+.report-summary:empty { display: none; }
+#revenuePanel, #ticketPanel, #inventoryPanel { margin-top: 16px; }
+@media (max-width: 680px) {
+  .report-tabs { display: flex; flex-direction: column; }
+  .report-tabs button { width: 100%; }
+  .gridform { grid-template-columns: 1fr; }
+  .tablewrap { overflow-x: auto; }
+}

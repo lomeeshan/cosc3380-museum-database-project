@@ -1,149 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Museum Reports</title>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-  <main id="content">
-    <h1>Museum Reports</h1>
-    <p class="subtitle">Choose filters and generate our three approved reports.</p>
-
-    <!-- R1: Combined Museum Revenue -->
-    <section class="card">
-      <h2>R1 - Combined Museum Revenue</h2>
-      <form id="revenueForm">
-        <div class="gridform">
-          <div class="field">
-            <label for="revenueSource">Revenue source</label>
-            <select id="revenueSource">
-              <option value="combined">Tickets + Gift Shop</option>
-              <option value="tickets">Tickets only</option>
-              <option value="giftshop">Gift Shop only</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="revenueStart">Purchase/sale date from</label>
-            <input id="revenueStart" type="date">
-          </div>
-          <div class="field">
-            <label for="revenueEnd">Purchase/sale date to</label>
-            <input id="revenueEnd" type="date">
-          </div>
-        </div>
-        <div class="formfooter">
-          <button class="btn" type="submit">Generate revenue report</button>
-        </div>
-      </form>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Month</th><th>Ticket revenue ($)</th>
-              <th>Gift Shop revenue ($)</th><th>Total revenue ($)</th>
-            </tr>
-          </thead>
-          <tbody id="revenueRows"></tbody>
-        </table>
+<main id="content">
+  <h1>Museum Reports</h1>
+  <p class="subtitle">Explore museum revenue, ticket sales and gift-shop activity.</p>
+  <div class="actions report-tabs" role="tablist" aria-label="Museum reports">
+    <button type="button" class="btn" data-report-tab="revenuePanel">Revenue</button>
+    <button type="button" class="btn secondary" data-report-tab="ticketPanel">Ticket Sales</button>
+    <button type="button" class="btn secondary" data-report-tab="inventoryPanel">Gift Shop Inventory</button>
+  </div>
+  <section class="card" id="revenuePanel" data-report-panel>
+    <h2>Combined Museum Revenue</h2>
+    <p>Revenue grouped by month from ticket purchases and gift-shop sales.</p>
+    <form id="revenueForm">
+      <div class="gridform">
+        <div class="field"><label for="revenueSource">Revenue source</label>
+          <select id="revenueSource"><option value="combined">Tickets + Gift Shop</option><option value="tickets">Tickets</option><option value="giftshop">Gift Shop</option></select></div>
+        <div class="field"><label for="revenueStart">Start date</label><input type="date" id="revenueStart"></div>
+        <div class="field"><label for="revenueEnd">End date</label><input type="date" id="revenueEnd"></div>
       </div>
-      <p id="revenueMessage" aria-live="polite"></p>
-    </section>
-
-    <!-- R2: Ticket Sales Analysis by Exhibition -->
-    <section class="card">
-      <h2>R2 - Ticket Sales Analysis by Exhibition</h2>
-      <form id="ticketSalesForm">
-        <div class="gridform">
-          <div class="field">
-            <label for="salesExhibition">Exhibition</label>
-            <select id="salesExhibition">
-              <option value="">All exhibitions and general admission</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="salesTicketType">Ticket type</label>
-            <select id="salesTicketType">
-              <option value="">All ticket types</option>
-              <option value="Adult">Adult</option>
-              <option value="Child">Child</option>
-              <option value="Student">Student</option>
-              <option value="Senior">Senior</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="salesStart">Visit date from</label>
-            <input id="salesStart" type="date">
-          </div>
-          <div class="field">
-            <label for="salesEnd">Visit date to</label>
-            <input id="salesEnd" type="date">
-          </div>
-        </div>
-        <div class="formfooter">
-          <button class="btn" type="submit">Generate ticket sales report</button>
-        </div>
-      </form>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Exhibition</th><th>Tickets sold</th>
-              <th>Unique visitors</th><th>Revenue ($)</th>
-            </tr>
-          </thead>
-          <tbody id="ticketSalesRows"></tbody>
-        </table>
+      <div class="formfooter"><button class="btn" type="submit">Generate Revenue Report</button></div>
+    </form>
+    <p class="notice report-summary" id="revenueSummary" aria-live="polite"></p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Month</th><th>Ticket Revenue ($)</th><th>Gift Shop Revenue ($)</th><th>Total Revenue ($)</th></tr></thead>
+      <tbody id="revenueRows"></tbody>
+    </table></div>
+    <p id="revenueMessage" aria-live="polite"></p>
+  </section>
+  <section class="card" id="ticketPanel" data-report-panel hidden>
+    <h2>Ticket Sales by Exhibition</h2>
+    <p>Compare visitor counts, ticket types and sales revenue across exhibitions.</p>
+    <form id="ticketSalesForm">
+      <div class="gridform">
+        <div class="field"><label for="salesExhibition">Exhibition</label>
+          <select id="salesExhibition"><option value="">All exhibitions</option></select></div>
+        <div class="field"><label for="salesTicketType">Ticket type</label>
+          <select id="salesTicketType"><option value="">All types</option><option>Adult</option><option>Child</option><option>Student</option><option>Senior</option></select></div>
+        <div class="field"><label for="salesStart">Visit date from</label><input id="salesStart" type="date"></div>
+        <div class="field"><label for="salesEnd">Visit date to</label><input id="salesEnd" type="date"></div>
       </div>
-      <p id="ticketSalesMessage" aria-live="polite"></p>
-    </section>
-
-    <!-- R3: Gift Shop Inventory and Low Stock -->
-    <section class="card">
-      <h2>R3 - Gift Shop Inventory and Low Stock</h2>
-      <form id="inventoryForm">
-        <div class="gridform">
-          <div class="field">
-            <label for="inventoryCategory">Product category</label>
-            <select id="inventoryCategory">
-              <option value="">All categories</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="inventoryThreshold">Low-stock threshold (units)</label>
-            <input id="inventoryThreshold" type="number"
-                   min="1" step="1" value="5" required>
-          </div>
-          <div class="field">
-            <label for="inventoryStock">Show</label>
-            <select id="inventoryStock">
-              <option value="all">All products</option>
-              <option value="low">Low-stock products only</option>
-            </select>
-          </div>
-        </div>
-        <div class="formfooter">
-          <button class="btn" type="submit">Generate inventory report</button>
-        </div>
-      </form>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th><th>Category</th><th>Units in stock</th>
-              <th>Stock status</th><th>Active status</th>
-              <th>Inventory value ($)</th><th>Units sold</th>
-              <th>Sales revenue ($)</th>
-            </tr>
-          </thead>
-          <tbody id="inventoryRows"></tbody>
-        </table>
+      <div class="formfooter"><button type="submit" class="btn">Generate Ticket Report</button></div>
+    </form>
+    <p class="notice report-summary" id="ticketSummary" aria-live="polite"></p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Exhibition</th><th>Tickets Sold</th><th>Unique Visitors</th><th>Revenue ($)</th></tr></thead>
+      <tbody id="ticketSalesRows"></tbody>
+    </table></div>
+    <p id="ticketSalesMessage" aria-live="polite"></p>
+  </section>
+  <section class="card" id="inventoryPanel" data-report-panel hidden>
+    <h2>Gift Shop Inventory and Sales</h2>
+    <p>Stock quantity and inventory value are current snapshots. Units sold and revenue are filtered by the sale dates below.</p>
+    <form id="inventoryForm">
+      <div class="gridform">
+        <div class="field"><label for="inventoryCategory">Category</label>
+          <select id="inventoryCategory"><option value="">All categories</option></select></div>
+        <div class="field"><label for="inventoryThreshold">Low-stock threshold</label>
+          <input id="inventoryThreshold" type="number" min="1" step="1" value="5" required></div>
+        <div class="field"><label for="inventoryStock">Display</label>
+          <select id="inventoryStock"><option value="all">All products</option><option value="low">Low stock only</option></select></div>
+        <div class="field"><label for="inventoryStart">Sales start date</label><input id="inventoryStart" type="date"></div>
+        <div class="field"><label for="inventoryEnd">Sales end date</label><input id="inventoryEnd" type="date"></div>
       </div>
-      <p id="inventoryMessage" aria-live="polite"></p>
-    </section>
-  </main>
-  <script defer src="/js/common.js"></script>
-  <script defer src="/js/reports.js"></script>
-</body>
-</html>
+      <div class="formfooter"><button type="submit" class="btn">Generate Inventory Report</button></div>
+    </form>
+    <p class="notice report-summary" id="inventorySummary" aria-live="polite"></p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Product</th><th>Category</th><th>Stock</th><th>Stock Status</th><th>Active</th><th>Current Inventory Value ($)</th><th>Period Units Sold</th><th>Period Sales Revenue ($)</th></tr></thead>
+      <tbody id="inventoryRows"></tbody>
+    </table></div>
+    <p id="inventoryMessage" aria-live="polite"></p>
+  </section>
+</main>
+<script defer src="/js/common.js"></script>
+<script defer src="/js/reports.js"></script>
+</body></html>
