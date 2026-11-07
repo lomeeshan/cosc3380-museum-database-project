@@ -15,6 +15,21 @@ function validVisitDate(value) {
         && date.toISOString().slice(0, 10) === value;
 }
 
+function todayInMuseumTimeZone() {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Chicago',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(new Date());
+
+    const values = Object.fromEntries(
+        parts.map(part => [part.type, part.value])
+    );
+
+    return `${values.year}-${values.month}-${values.day}`;
+}
+
 router.get('/', async (req, res, next) => {
     try {
         const [rows] = await db.query(`
@@ -63,8 +78,14 @@ router.post('/', async (req, res, next) => {
             error: 'Select a valid visitor, ticket type, exhibition, and visit date (YYYY-MM-DD)'
         });
     }
+    if (visitDate < todayInMuseumTimeZone()) {
+    return res.status(400).json({
+        error: 'Visit date cannot be in the past.'
+        });
+    }
+
     try {
-        // The MySQL BEFORE INSERT trigger assigns ExpirationDateTime.
+        // The MySQL 'BEFORE INSERT' trigger assigns ExpirationDateTime.
         const [result] = await db.execute(`
             INSERT INTO TICKET
                 (VisitorID, ExhibitionID, TicketType, TicketTime, TicketPrice, VisitDate)
