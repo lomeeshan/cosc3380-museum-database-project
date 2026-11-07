@@ -36,7 +36,7 @@ window.Museum = {
       <a class="navlink" href="/manage.html?entity=exhibitions">Exhibitions</a>
       <div class="navgroup">Operations</div><a class="navlink" href="/manage.html?entity=visitors">Visitors</a>
       <a class="navlink" href="/tickets.html">Tickets</a><a class="navlink" href="/giftshop.html">Gift Shop</a>
-      ${this.user.role === 'Admin' ? '<div class="navgroup">Analysis</div><a class="navlink" href="/reports.html">Reports</a>' : ''}</nav>`;
+      ${this.user.role === 'Admin' ? '<div class="navgroup">Analysis</div><a class="navlink" href="/queries.html">Queries</a><a class="navlink" href="/reports.html">Reports</a>' : ''}</nav>`;
     const main=document.createElement('div');main.className='main';
     const bar=document.createElement('header');bar.className='topbar';
     const span=document.createElement('span');span.textContent='Museum Management System';
