@@ -35,6 +35,32 @@
     section.remove();
     return;
   }
+
+  // Show out-of-stock products to Admin only.
+  try {
+    const products = await Museum.api('/api/sales/out-of-stock');
+
+    if (products.length > 0) {
+      const alert = document.getElementById('outOfStockAlert');
+      const list = document.getElementById('outOfStockList');
+
+      list.replaceChildren();
+
+      for (const product of products) {
+        const item = document.createElement('li');
+        item.textContent =
+          `${product.ProductName} — 0 units remaining`;
+        list.append(item);
+      }
+
+      alert.hidden = false;
+    }
+  } catch (error) {
+    Museum.notify('status', error.message, true);
+  }
+
+
+
   const panels = [...document.querySelectorAll('[data-query-panel]')];
   document.querySelectorAll('[data-query-tab]').forEach(button => {
     button.addEventListener('click', () => {

@@ -25,26 +25,27 @@
     <h2>
      Complete a sale
     </h2>
+    <p class="muted">* indicates a required field.</p>
     <form id="saleForm">
      <div class="gridform">
       <div class="field">
        <label for="productId">
-        Product
+        Product *
        </label>
        <select id="productId" required="">
        </select>
       </div>
       <div class="field">
        <label for="quantity">
-        Quantity
+        Quantity *
        </label>
        <input id="quantity" min="1" required="" step="1" type="number" value="1"/>
       </div>
       <div class="field">
        <label for="paymentMethod">
-        Payment method
+        Payment method *
        </label>
-       <select id="paymentMethod">
+       <select id="paymentMethod" required>
         <option>
          Card
         </option>

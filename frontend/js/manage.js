@@ -67,7 +67,7 @@ async function buildForm() {
     const wrapper = document.createElement('div');
     wrapper.className = 'field';
     const text = document.createElement('label');
-    text.textContent = label;
+    text.textContent = required ? `${label} *` : `${label} (optional)`;
     text.htmlFor = `field-${field}`;
     let input;
     if (kind === 'textarea') {
