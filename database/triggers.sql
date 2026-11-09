@@ -10,8 +10,7 @@ CREATE TRIGGER deactivate_low_stock_product
 BEFORE UPDATE ON GIFTSHOP_PRODUCT
 FOR EACH ROW
 BEGIN
-    IF OLD.QuantityInStock >= 5
-       AND NEW.QuantityInStock < 5 THEN
+    IF NEW.QuantityInStock = 0 THEN
         SET NEW.IsActive = 0;
     END IF;
 END$$

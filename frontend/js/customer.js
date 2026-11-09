@@ -47,7 +47,7 @@
       user=response.user;
       document.getElementById('welcome').textContent =
         'Welcome, '+user.FirstName+'!';
-    } catch { location.replace('/customer-login.html'); return; }
+    } catch { location.replace('/login.html'); return; }
 
     async function reload() {
       const rows = await api('/api/customer/tickets');
@@ -122,9 +122,116 @@ updateVisitDateRange();
         await reload();
       } catch(err) { notify(err.message,true); }
     });
+    // CUSTOMER GIFT SHOP
+    const giftForm = document.getElementById('customerGiftShopForm');
+    const giftSelect = document.getElementById('giftProductId');
+    const giftMessage = document.getElementById('giftShopMessage');
+
+    function giftNotify(text, error = false) {
+      giftMessage.textContent = text;
+      giftMessage.className = error ? 'notice error' : 'notice';
+    }
+
+    async function loadGiftShop() {
+      const products = await api('/api/customer/giftshop/products');
+      const tbody = document.getElementById('giftShopProducts');
+
+      tbody.replaceChildren();
+      giftSelect.replaceChildren();
+
+      let availableCount = 0;
+
+      for (const product of products) {
+        const available = Number(product.QuantityInStock) > 0;
+
+        const row = document.createElement('tr');
+
+        const values = [
+          product.ProductName,
+          product.Category,
+          '$' + Number(product.CurrentPrice).toFixed(2),
+          available
+            ? product.QuantityInStock + ' available'
+            : 'Out of stock'
+        ];
+
+        for (const value of values) {
+          const cell = document.createElement('td');
+          cell.textContent = String(value);
+          row.append(cell);
+        }
+
+        tbody.append(row);
+
+        if (available) {
+          const option = document.createElement('option');
+          option.value = product.ProductID;
+          option.textContent = product.ProductName +
+            ' — $' + Number(product.CurrentPrice).toFixed(2);
+
+          giftSelect.append(option);
+          availableCount++;
+        }
+      }
+
+      if (products.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 4;
+        cell.textContent = 'No products available.';
+        row.append(cell);
+        tbody.append(row);
+      }
+
+      giftForm.querySelector('button').disabled =
+        availableCount === 0;
+    }
+
+    giftForm.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const productId = Number(giftSelect.value);
+      const quantity = Number(
+        document.getElementById('giftQuantity').value
+      );
+
+      try {
+        const result = await api(
+          '/api/customer/giftshop/purchase',
+          {
+            method: 'POST',
+            body: JSON.stringify({ productId, quantity })
+          }
+        );
+
+        giftNotify(
+          'Purchase #' + result.saleId +
+          ' confirmed! Total: $' +
+          Number(result.total).toFixed(2) +
+          '. No payment processed.'
+        );
+
+        await loadGiftShop();
+
+      } catch (error) {
+        giftNotify(error.message, true);
+        try {
+          await loadGiftShop();
+        } catch (refreshError) {
+          giftNotify(refreshError.message, true);
+        }
+      }
+    });
+
+    try {
+      await loadGiftShop();
+    } catch (error) {
+      giftForm.querySelector('button').disabled = true;
+      giftNotify(error.message, true);
+    }
     document.getElementById('customerLogout').addEventListener('click',async()=>{
       try { await api('/api/customer/logout',{method:'POST'}); }
-      finally { location.replace('/customer-login.html'); }
+      finally { location.replace('/login.html'); }
     });
   }
 })();

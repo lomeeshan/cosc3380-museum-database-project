@@ -8,6 +8,23 @@ const router = express.Router();
 // Only Admin and Sales Staff can access gift-shop sales.
 router.use(requireLogin, requireRole('Admin', 'Sales Staff'));
 
+ // GET /api/sales/out-of-stock
+ // Only admin can view products that have run out of stock.
+ router.get('/out-of-stock', requireRole('Admin'), async (req, res, next) => {
+   try {
+     const [products] = await db.query(`
+       SELECT ProductID, ProductName, QuantityInStock
+       FROM GIFTSHOP_PRODUCT
+       WHERE QuantityInStock = 0
+       ORDER BY ProductName
+     `);
+
+     res.json(products);
+   } catch (error) {
+     next(error);
+   }
+ });
+
 // GET /api/sales - Retrieve recent sales.
 router.get('/', async (req, res, next) => {
   try {
@@ -123,7 +140,7 @@ router.post('/', async (req, res, next) => {
 
       // Check whether the trigger deactivated the product.
       if (Number(product.IsActive) === 0 &&
-          Number(product.QuantityInStock) < 5) {
+          Number(product.QuantityInStock) === 0) {
         lowStockAlerts.push({
           productName: product.ProductName,
           quantityInStock: Number(product.QuantityInStock)

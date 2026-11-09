@@ -53,10 +53,13 @@ app.use('/api/auth', require('./routes/auth'));
 // Eeshan's customer registration and authentication routes
 app.use('/api/customer', require('./routes/customer'));
 
-// Customer ticket purchases and history
+// Eeshan's Customer ticket purchases and history
 app.use('/api/customer/tickets', require('./routes/customerTickets'));
 
-// Curator-only artwork maintenance
+// Eeshan's Customer gift-shop purchases
+app.use('/api/customer/giftshop', require('./routes/customerGiftShop'));
+
+// Eeshan's Curator-only artwork maintenance
 app.use('/api/artworks', require('./routes/artworkMaintenance'));
 
 // Alaric's crud routes
@@ -68,13 +71,13 @@ app.use('/api/tickets', require('./routes/tickets'));
 // Eeshan's sale routes
 app.use('/api/sales', require('./routes/sales'));
 
-// Museum database queries
+// Alaric's Museum database queries
 app.use('/api/queries', require('./routes/queries'));
 
-// Museum database reports
+// Alaric's Museum database reports
 app.use('/api/reports', require('./routes/reports'));
 
-// Public exhibition and artwork listings
+// Alaric's public exhibition and artwork listings
 app.use('/api/public', require('./routes/public'));
 
 app.use('/api', (req, res) => {

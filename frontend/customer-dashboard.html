@@ -6,16 +6,69 @@
 <a class="btn secondary" href="/landing.html">Browse museum</a></div>
 <p id="welcome"></p>
 <section class="card"><h2>Reserve a Demo Ticket</h2>
+<p class="muted">* indicates a required field.</p>
 <p>No actual payment is collected. Museum staff will verify the booking.</p>
 <form id="purchaseForm">
 <div class="gridform">
-<div class="field"><label for="exhibitionId">Exhibition</label><select id="exhibitionId" required></select></div>
-<div class="field"><label for="ticketType">Ticket type</label><select id="ticketType" required>
+<div class="field"><label for="exhibitionId">Exhibition *</label><select id="exhibitionId" required></select></div>
+<div class="field"><label for="ticketType">Ticket type *</label><select id="ticketType" required>
 <option>Adult</option><option>Student</option><option>Child</option><option>Senior</option></select></div>
-<div class="field"><label for="visitDate">Visit date</label><input id="visitDate" type="date" required></div>
+<div class="field"><label for="visitDate">Visit date *</label><input id="visitDate" type="date" required></div>
 </div><button class="btn" type="submit">Confirm demo ticket</button></form>
 <p id="customerMessage" aria-live="polite"></p>
 </section><section class="card"><h2>My Tickets</h2><div class="tablewrap"><table>
 <thead><tr><th>Ticket</th><th>Exhibition</th><th>Type</th><th>Visit date</th><th>Price</th></tr></thead>
 <tbody id="myTickets"></tbody></table></div></section>
+<section class="card">
+  <h2>Museum Gift Shop</h2>
+  <p>Browse museum products and make a demo purchase.
+     No actual payment is collected.</p>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Availability</th>
+        </tr>
+      </thead>
+      <tbody id="giftShopProducts"></tbody>
+    </table>
+  </div>
+
+  <h3>Purchase a Product</h3>
+  <p class="muted">* indicates a required field.</p>
+
+  <form id="customerGiftShopForm">
+    <div class="gridform">
+
+      <div class="field">
+        <label for="giftProductId">Product *</label>
+        <select id="giftProductId" required></select>
+      </div>
+
+      <div class="field">
+        <label for="giftQuantity">Quantity *</label>
+        <input
+          id="giftQuantity"
+          type="number"
+          min="1"
+          max="20"
+          value="1"
+          required
+        >
+      </div>
+
+    </div>
+
+    <button class="btn" type="submit">
+      Complete Demo Purchase
+    </button>
+  </form>
+
+  <p id="giftShopMessage" aria-live="polite"></p>
+</section>
+
 </main><script defer src="/js/customer.js"></script></body></html>
