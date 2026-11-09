@@ -12,8 +12,6 @@
   <p class="subtitle">Generate a report, then inspect the source records behind the totals.</p>
   <div class="actions report-tabs" role="tablist" aria-label="Museum reports">
     <button type="button" class="btn" data-report-tab="revenuePanel">Revenue</button>
-    <button type="button" class="btn secondary" data-report-tab="ticketPanel">Ticket Sales</button>
-    <button type="button" class="btn secondary" data-report-tab="inventoryPanel">Gift Shop Inventory</button>
     <button type="button" class="btn secondary" data-report-tab="productsPanel">Top Products</button>
     <button type="button" class="btn secondary" data-report-tab="visitorsPanel">Visitor Breakdown</button>
   </div>
@@ -48,74 +46,6 @@
         <div class="tablewrap"><table>
           <thead><tr><th>Record ID</th><th>Source</th><th>Recorded at</th><th>Description</th><th>Qty</th><th>Unit Price ($)</th><th>Amount ($)</th></tr></thead>
           <tbody id="revenueSourceRows"></tbody>
-        </table></div>
-      </details>
-    </div>
-  </section>
-
-  <section class="card" id="ticketPanel" data-report-panel hidden>
-    <h2>Ticket Sales by Exhibition</h2>
-    <p>Ticket revenue and category counts; VisitDate controls the date filter.</p>
-    <form id="ticketSalesForm">
-      <div class="gridform">
-        <div class="field"><label for="salesExhibition">Exhibition</label>
-          <select id="salesExhibition"><option value="">All exhibitions</option></select>
-        </div>
-        <div class="field"><label for="salesTicketType">Ticket type</label>
-          <select id="salesTicketType"><option value="">All types</option><option>Adult</option><option>Child</option><option>Student</option><option>Senior</option></select>
-        </div>
-        <div class="field"><label for="salesStart">Visit date from</label><input id="salesStart" type="date"></div>
-        <div class="field"><label for="salesEnd">Visit date to</label><input id="salesEnd" type="date"></div>
-      </div>
-      <div class="formfooter"><button type="submit" class="btn">Generate Ticket Report</button></div>
-    </form>
-    <p id="ticketSalesMessage" aria-live="polite"></p>
-    <div id="ticketResults" hidden>
-      <p class="notice report-summary" id="ticketSummary" aria-live="polite"></p>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Exhibition</th><th>Tickets</th><th>Unique Visitors</th><th>Adult</th><th>Child</th><th>Student</th><th>Senior</th><th>Revenue ($)</th></tr></thead>
-        <tbody id="ticketSalesRows"></tbody>
-      </table></div>
-      <details>
-        <summary>View source tickets with visitor and exhibition details</summary>
-        <div class="tablewrap"><table>
-          <thead><tr><th>Ticket ID</th><th>Visit Date</th><th>Visitor ID</th><th>Visitor</th><th>Exhibition</th><th>Type</th><th>Price ($)</th></tr></thead>
-          <tbody id="ticketSourceRows"></tbody>
-        </table></div>
-      </details>
-    </div>
-  </section>
-
-  <section class="card" id="inventoryPanel" data-report-panel hidden>
-    <h2>Gift Shop Inventory and Sales</h2>
-    <p>Stock is current; units sold and revenue use completed sales in the chosen period.</p>
-    <form id="inventoryForm">
-      <div class="gridform">
-        <div class="field"><label for="inventoryCategory">Category</label>
-          <select id="inventoryCategory"><option value="">All categories</option></select>
-        </div>
-        <div class="field"><label for="inventoryThreshold">Low-stock threshold <span style="color: red">*</span></label>
-          <input id="inventoryThreshold" type="number" min="1" step="1" value="5" required></div>
-        <div class="field"><label for="inventoryStock">Display</label>
-          <select id="inventoryStock"><option value="all">All products</option><option value="low">Low stock only</option></select>
-        </div>
-        <div class="field"><label for="inventoryStart">Sales start date</label><input id="inventoryStart" type="date"></div>
-        <div class="field"><label for="inventoryEnd">Sales end date</label><input id="inventoryEnd" type="date"></div>
-      </div>
-      <div class="formfooter"><button type="submit" class="btn">Generate Inventory Report</button></div>
-    </form>
-    <p id="inventoryMessage" aria-live="polite"></p>
-    <div id="inventoryResults" hidden>
-      <p class="notice report-summary" id="inventorySummary" aria-live="polite"></p>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Product</th><th>Category</th><th>Stock</th><th>Stock Status</th><th>Active</th><th>Inventory Value ($)</th><th>Units Sold</th><th>Sales Revenue ($)</th></tr></thead>
-        <tbody id="inventoryRows"></tbody>
-      </table></div>
-      <details>
-        <summary>View current product stock and completed sale-line source records</summary>
-        <div class="tablewrap"><table>
-          <thead><tr><th>Product ID</th><th>Product</th><th>Category</th><th>Current Stock</th><th>Status</th><th>Sale ID</th><th>Sale Date</th><th>Units</th><th>Unit Price ($)</th><th>Line Revenue ($)</th></tr></thead>
-          <tbody id="inventorySourceRows"></tbody>
         </table></div>
       </details>
     </div>
