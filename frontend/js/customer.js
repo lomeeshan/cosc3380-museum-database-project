@@ -71,46 +71,99 @@
       }
     }
 
-    try {
-      const exhibitions=await api('/api/public/exhibitions');
-      const select=document.getElementById('exhibitionId');
-      select.replaceChildren();
-      const today=new Date().toISOString().slice(0,10);
-      document.getElementById('visitDate').min=today;
-      const available=exhibitions.filter(ex =>
-        ['Active','Upcoming'].includes(ex.Status) && ex.EndDate>=today);
-      if (!available.length) {
-        const opt=document.createElement('option');
-        opt.textContent='No exhibitions available';
-        opt.value='';select.append(opt);
-        document.querySelector('#purchaseForm button').disabled=true;
-      }
-      available.forEach(ex=>{
-        const opt=document.createElement('option');
-        opt.value=ex.ExhibitionID;
-        opt.textContent=ex.ExhibitionTitle+' ('+ex.StartDate+' to '+ex.EndDate+')';
-        select.append(opt);
-        
 
-      });
-      const visitDateInput=document.getElementById('visitDate');
-function updateVisitDateRange(){
-  const chosen=available.find(ex=>String(ex.ExhibitionID)===select.value);
-  if(!chosen){ visitDateInput.value=''; return; }
-  visitDateInput.min=chosen.StartDate>today?chosen.StartDate:today;
-  visitDateInput.max=chosen.EndDate;
-  if(visitDateInput.value && (visitDateInput.value<visitDateInput.min ||
-     visitDateInput.value>visitDateInput.max)) visitDateInput.value='';
-}
-select.addEventListener('change',updateVisitDateRange);
-updateVisitDateRange();
+    try {
+      const exhibitions = await api('/api/public/exhibitions');
+      const select = document.getElementById('exhibitionId');
+      const visitDateInput = document.getElementById('visitDate');
+
+      select.replaceChildren();
+
+      // Use the museum's local date.
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Chicago',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(new Date());
+
+      const dateValues = Object.fromEntries(
+        parts.map(part => [part.type, part.value])
+      );
+
+      const today =
+        `${dateValues.year}-${dateValues.month}-${dateValues.day}`;
+
+      // First option: General Admission.
+      const generalOption = document.createElement('option');
+      generalOption.value = 'general';
+      generalOption.textContent = 'General Admission';
+      select.append(generalOption);
+
+      // Add available exhibitions underneath.
+      const available = exhibitions.filter(ex =>
+        ['Active', 'Upcoming'].includes(ex.Status) &&
+        ex.EndDate >= today
+      );
+
+      for (const ex of available) {
+        const option = document.createElement('option');
+        option.value = ex.ExhibitionID;
+        option.textContent =
+          ex.ExhibitionTitle +
+          ' (' + ex.StartDate + ' to ' + ex.EndDate + ')';
+
+        select.append(option);
+      }
+
+      // Update valid dates depending on admission selection.
+      function updateVisitDateRange() {
+        const chosen = available.find(ex =>
+          String(ex.ExhibitionID) === select.value
+        );
+
+        visitDateInput.min =
+          chosen && chosen.StartDate > today
+            ? chosen.StartDate
+            : today;
+
+        if (chosen) {
+          visitDateInput.max = chosen.EndDate;
+        } else {
+          // General Admission has no exhibition end date.
+          visitDateInput.removeAttribute('max');
+        }
+
+        if (
+          visitDateInput.value &&
+          (
+            visitDateInput.value < visitDateInput.min ||
+            (chosen && visitDateInput.value > visitDateInput.max)
+          )
+        ) {
+          visitDateInput.value = '';
+        }
+      }
+
+      select.addEventListener('change', updateVisitDateRange);
+      updateVisitDateRange();
+
       await reload();
-    } catch(err) { notify(err.message,true); }
+
+    } catch (err) {
+      notify(err.message, true);
+    }
+
 
     document.getElementById('purchaseForm').addEventListener('submit',async e=>{
       e.preventDefault();
       const body={
-        exhibitionId:Number(document.getElementById('exhibitionId').value),
+
+      exhibitionId:
+        document.getElementById('exhibitionId').value === 'general'
+          ? null
+          : Number(document.getElementById('exhibitionId').value),
+
         ticketType:document.getElementById('ticketType').value,
         visitDate:document.getElementById('visitDate').value
       };
