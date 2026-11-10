@@ -116,6 +116,17 @@ CREATE TABLE ARTWORK_MAINTENANCE_LOG (
         CHECK (Status IN ('Open', 'Resolved'))
 );
 
+-- Stores notifications generated automatically by museum triggers.
+CREATE TABLE MUSEUM_NOTIFICATION (
+    NotificationID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    NotificationType VARCHAR(30) NOT NULL,
+    EntityType VARCHAR(30) NOT NULL,
+    EntityID INT UNSIGNED NOT NULL,
+    TargetRole VARCHAR(30) NOT NULL,
+    Message VARCHAR(255) NOT NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE EXHIBITION (
     ExhibitionID INT UNSIGNED AUTO_INCREMENT,
     GalleryID INT UNSIGNED NOT NULL,

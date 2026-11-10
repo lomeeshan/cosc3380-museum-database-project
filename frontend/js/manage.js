@@ -28,7 +28,7 @@ const pages = {
   },
   products: {
     title: 'Gift Shop Products', id: 'ProductID', roles: ['Admin', 'Sales Staff'],
-    fields: [['ProductName', 'Product name', 'text', true], ['Category', 'Category', 'text', true],
+    fields: [['ProductName', 'Product name', 'text', true], ['Category', 'Category', 'category', true],
       ['CurrentPrice', 'Price', 'number', true], ['QuantityInStock', 'Stock', 'number', true],
       ['IsActive', 'Available for sale', 'active', true]]
   }
@@ -72,12 +72,24 @@ async function buildForm() {
     let input;
     if (kind === 'textarea') {
       input = document.createElement('textarea');
-    } else if (['collections', 'galleries', 'status', 'active'].includes(kind)) {
+    } else if (['collections', 'galleries', 'status', 'active', 'category'].includes(kind)) {
       input = document.createElement('select');
       if (kind === 'collections' || kind === 'galleries') {
         await fillSelect(input, kind);
       } else {
-        const choices = kind === 'status' ? ['Upcoming', 'Active', 'Completed'] : ['1', '0'];
+      const choices =
+        kind === 'status'
+        ? ['Upcoming', 'Active', 'Completed']
+        : kind === 'category'
+          ? [
+            'Accessories',
+            'Books',
+            'Housewares',
+            'Prints',
+            'Stationery',
+            'Toys & Games'
+        ]
+      : ['1', '0'];
         for (const value of choices) {
           const option = document.createElement('option');
           option.value = value;

@@ -10,9 +10,46 @@ CREATE TRIGGER deactivate_low_stock_product
 BEFORE UPDATE ON GIFTSHOP_PRODUCT
 FOR EACH ROW
 BEGIN
+
+    -- Business rule: Products with zero inventory
+    -- must not remain available for sale.
     IF NEW.QuantityInStock = 0 THEN
+
+        -- Automatically deactivate the product.
         SET NEW.IsActive = 0;
+
+        -- Only notify when stock first drops to zero.
+        IF OLD.QuantityInStock > 0 THEN
+
+            INSERT INTO MUSEUM_NOTIFICATION
+                (NotificationType, EntityType, EntityID,
+                 TargetRole, Message)
+            VALUES
+                (
+                    'GiftShopOutOfStock',
+                    'Product',
+                    NEW.ProductID,
+                    'Admin',
+                    CONCAT(
+                        'Gift shop product #', NEW.ProductID,
+                        ' is out of stock and has been deactivated.'
+                    )
+                ),
+                (
+                    'GiftShopOutOfStock',
+                    'Product',
+                    NEW.ProductID,
+                    'Sales Staff',
+                    CONCAT(
+                        'Gift shop product #', NEW.ProductID,
+                        ' is out of stock and has been deactivated.'
+                    )
+                );
+
+        END IF;
+
     END IF;
+
 END$$
 
 DELIMITER ;
@@ -42,6 +79,28 @@ BEGIN
             (ArtworkID, Status)
         VALUES
             (NEW.ArtworkID, 'Open');
+    -- Notify the Curator and Admin when maintenance is required.
+    INSERT INTO MUSEUM_NOTIFICATION
+        (NotificationType, EntityType, EntityID,
+         TargetRole, Message)
+    VALUES
+        (
+            'ArtworkMaintenance',
+            'Artwork',
+            NEW.ArtworkID,
+            'Curator',
+            CONCAT('Artwork #', NEW.ArtworkID,
+                   ' requires maintenance. Work order opened.')
+        ),
+        (
+            'ArtworkMaintenance',
+            'Artwork',
+            NEW.ArtworkID,
+            'Admin',
+            CONCAT('Artwork #', NEW.ArtworkID,
+                   ' requires maintenance. Work order opened.')
+        );
+
 
     -- Automatically resolve the existing work order.
     ELSEIF OLD.NeedsMaintenance = 1
