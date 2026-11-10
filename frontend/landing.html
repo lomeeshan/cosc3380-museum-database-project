@@ -1,37 +1,239 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Museum — Explore & Tickets</title><link rel="stylesheet" href="/css/styles.css"></head>
-<body><main class="content" style="max-width:1000px;margin:auto;padding:24px">
-  <h1>Welcome to the Museum</h1>
-  <p>Browse our exhibitions, discover artworks, and reserve a demo admission ticket.</p>
-  <nav class="actions">
-  <a class="btn" href="/customer-register.html">
-    Create Customer Account
-  </a>
-  <a class="btn secondary" href="/login.html">
-    Sign In
-  </a>
-</nav>
-  <section class="card"><h2>Exhibitions</h2><div id="exhibitions" class="cards">Loading...</div></section>
-  <section class="card"><h2>Artworks</h2><div id="artworks" class="cards">Loading...</div></section>
-</main><script>
-async function draw(path,target,show){
-  const box=document.getElementById(target);
-  try{
-    const response=await fetch(path);if(!response.ok)throw new Error('Unable to load');
-    const rows=await response.json();box.replaceChildren();
-    if(!rows.length){box.textContent='No records available.';return;}
-    for(const row of rows){const card=document.createElement('article');
-      card.className='card';const title=document.createElement('h3');
-      const detail=document.createElement('p');
-      title.textContent=show==='ex'?row.ExhibitionTitle:row.Title;
-      detail.textContent=show==='ex'?
-        row.GalleryName+' | '+row.StartDate+' to '+row.EndDate+' | '+row.Status:
-        (row.Medium||'Artwork')+' | '+(row.CreationYear||'');
-      card.append(title,detail);box.append(card);
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MFA Museum | Exhibitions and Collection</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    /* Styles used only by the public landing page */
+    .site-header {
+      position: sticky; top: 0; z-index: 5;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      padding: 14px 32px;
+      background: var(--paper);
+      border-bottom: 1px solid var(--rule);
     }
-  }catch(e){box.textContent='Unable to load museum information.';}
+    .site-brand { font-family: var(--serif); font-size: 25px; color: var(--ink); text-decoration: none; }
+    .site-brand span { color: var(--brass); }
+
+    .hero {
+      display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center;
+      max-width: 1120px; margin: auto; padding: 64px 32px 48px;
+    }
+    .hero h1 { font-size: 54px; line-height: 1.04; margin-bottom: 20px; }
+    .hero p { font-size: 18px; margin: 0 0 28px; color: var(--muted); }
+    .hero figure { margin: 0; }
+    .hero img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+    .hero figcaption { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+    .section { max-width: 1120px; margin: auto; padding: 28px 32px 56px; }
+    .section > h2 { font-size: 36px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); margin-bottom: 8px; }
+    .group-title { font-size: 16px; font-weight: 600; color: var(--muted); margin: 28px 0 14px; }
+
+    .collection { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 26px; }
+    .collection-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+    .collection-card .art-image,
+    .collection-card .image-unavailable,
+    .collection-card .exhibit-banner { margin: 0; }
+    .collection-card .body { padding: 16px 18px 20px; }
+    .collection-card h3 { font-family: var(--serif); font-size: 21px; font-weight: 500; line-height: 1.2; margin: 0 0 8px; }
+    .collection-card .meta { font-size: 14px; color: var(--muted); margin: 0; }
+    .collection-card .desc { font-size: 15px; margin: 10px 0 0; }
+    .collection-card .credit { font-size: 12px; color: var(--muted); margin: 12px 0 0; }
+
+    .site-footer {
+      border-top: 1px solid var(--rule); padding: 24px 32px;
+      font-size: 14px; color: var(--muted); text-align: center;
+    }
+
+    @media (max-width: 800px) {
+      .site-header { padding: 12px 16px; }
+      .hero { grid-template-columns: 1fr; gap: 28px; padding: 36px 16px 24px; }
+      .hero h1 { font-size: 38px; }
+      .section { padding: 20px 16px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="site-brand" href="/">MFA <span>Museum</span></a>
+    <nav class="actions">
+      <a class="btn secondary" href="/login.html">Sign in</a>
+      <a class="btn" href="/customer-register.html">Create account</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Four centuries of art, open to everyone in Houston.</h1>
+        <p>See what is on view now, explore the collection, and create a free account to reserve admission tickets.</p>
+        <div class="actions">
+          <a class="btn" href="#exhibitions">See exhibitions</a>
+          <a class="btn secondary" href="/customer-register.html">Reserve tickets</a>
+        </div>
+      </div>
+      <figure>
+        <img src="/images/exhibitions/light-and-color.jpg" alt="Claude Monet, Water Lilies, 1907: lily pads floating on a pond reflecting the sky">
+        <figcaption>Claude Monet, Water Lilies, 1907. Wikimedia Commons, public domain.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" id="exhibitions">
+      <h2>Exhibitions</h2>
+      <p id="exhibitions-status" class="muted">Loading exhibitions...</p>
+      <div id="group-active" class="hidden"><h3 class="group-title">On view now</h3><div class="collection"></div></div>
+      <div id="group-upcoming" class="hidden"><h3 class="group-title">Coming soon</h3><div class="collection"></div></div>
+      <div id="group-completed" class="hidden"><h3 class="group-title">Past exhibitions</h3><div class="collection"></div></div>
+    </section>
+
+    <section class="section" id="collection">
+      <h2>From the collection</h2>
+      <p id="artworks-status" class="muted">Loading artworks...</p>
+      <div id="artworks" class="collection"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    A COSC 3380 Team 4 demo project. Ticket reservations are for demonstration only and no payment is collected.
+  </footer>
+
+<script>
+// Images for each exhibition, matched by title.
+// "banner" is used when the works cannot be shown because of copyright.
+const EXHIBITION_MEDIA = {
+  'Light & Color: Impressionist Masters': { src: 'light-and-color.jpg', credit: 'Claude Monet, Water Lilies, 1907. Wikimedia Commons, public domain' },
+  'Hokusai and the Floating World': { src: 'hokusai.jpg', credit: 'Katsushika Hokusai, The Great Wave off Kanagawa. The Metropolitan Museum of Art, Open Access' },
+  'American Modernism': { src: 'american-modernism.jpg', credit: 'Charles Demuth, I Saw the Figure 5 in Gold, 1928. The Metropolitan Museum of Art, Open Access' },
+  'Frida Kahlo: Portraits of Self': { banner: 'Frida Kahlo', note: 'Works in this exhibition are protected by copyright.' },
+  'Houston Voices: Contemporary Local Artists': { src: 'houston-voices.jpg', credit: 'Carol M. Highsmith Archive, Library of Congress' },
+  'Rembrandt to Monet: Four Centuries': { src: 'rembrandt-to-monet.jpg', credit: 'Rembrandt, Self-Portrait with Two Circles. Wikimedia Commons, public domain' }
+};
+
+// Images for each artwork, matched by title.
+// "restricted" artworks are still under copyright, so no image is shown.
+const ARTWORK_MEDIA = {
+  'The Great Wave off Kanagawa': { src: 'great-wave.jpg', credit: 'The Metropolitan Museum of Art, Open Access' },
+  'Fine Wind, Clear Morning (Red Fuji)': { src: 'red-fuji.jpg', credit: 'The Metropolitan Museum of Art, Open Access' },
+  'Self-Portrait with Two Circles': { src: 'rembrandt-two-circles.jpg', credit: 'Wikimedia Commons, public domain' },
+  'Little Dancer Aged Fourteen': { src: 'little-dancer.jpg', credit: 'National Gallery of Art, Washington, Open Access' },
+  'The Rocks': { src: 'the-rocks.jpg', credit: 'Wikimedia Commons, public domain' },
+  'Water Lilies': { src: 'water-lilies.jpg', credit: 'Wikimedia Commons, public domain' },
+  'Untitled (Ship Channel)': { src: 'ship-channel.jpg', credit: 'Photo: Carol M. Highsmith Archive, Library of Congress' },
+  'Third Ward Morning': { src: 'third-ward-morning.jpg', credit: 'Photo: Carol M. Highsmith Archive, Library of Congress' },
+  'Bayou at Dusk': { src: 'bayou-at-dusk.jpg', credit: 'Photo: Carol M. Highsmith Archive, Library of Congress' },
+  'The Two Fridas': { restricted: true },
+  'Self-Portrait with Thorn Necklace and Hummingbird': { restricted: true },
+  'Jimson Weed/White Flower No. 1': { restricted: true },
+  'No. 61 (Rust and Blue)': { restricted: true }
+};
+
+function make(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text) el.textContent = text;
+  return el;
 }
-draw('/api/public/exhibitions','exhibitions','ex');
-draw('/api/public/artworks','artworks','art');
-</script></body></html>
+
+// Framed placeholder shown when there is no image to display
+function placeholder(note) {
+  const box = make('div', 'image-unavailable');
+  box.setAttribute('role', 'img');
+  box.setAttribute('aria-label', 'Image unavailable');
+  box.append(make('span', 'label-title', 'Image unavailable'), make('span', 'label-note', note));
+  return box;
+}
+
+// Returns the picture area for a card: an image, a banner, or a placeholder
+function mediaFor(entry, folder, altText) {
+  if (!entry) return placeholder('No image on file for this work yet.');
+  if (entry.restricted) return placeholder('This work is protected by copyright.');
+  if (entry.banner) {
+    const banner = make('div', 'exhibit-banner');
+    banner.append(make('span', 'banner-title', entry.banner), make('span', 'banner-note', entry.note));
+    return banner;
+  }
+  const img = make('img', 'art-image');
+  img.src = '/images/' + folder + '/' + entry.src;
+  img.alt = altText;
+  img.loading = 'lazy';
+  // If the file is missing, show the placeholder instead of a broken image
+  img.onerror = () => img.replaceWith(placeholder('Image could not be loaded.'));
+  return img;
+}
+
+function formatDate(value) {
+  if (!value) return '';
+  const date = new Date(value + 'T00:00:00Z');
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+}
+
+function buildCard(entry, folder, title, metaLines, description) {
+  const card = make('article', 'collection-card');
+  const body = make('div', 'body');
+  body.append(make('h3', '', title));
+  for (const line of metaLines) {
+    if (line) body.append(make('p', 'meta', line));
+  }
+  if (description) body.append(make('p', 'desc', description));
+  if (entry && entry.credit) body.append(make('p', 'credit', entry.credit));
+  card.append(mediaFor(entry, folder, title), body);
+  return card;
+}
+
+async function loadExhibitions() {
+  const status = document.getElementById('exhibitions-status');
+  try {
+    const response = await fetch('/api/public/exhibitions');
+    if (!response.ok) throw new Error('Unable to load');
+    const rows = await response.json();
+    if (!rows.length) { status.textContent = 'No exhibitions are listed right now.'; return; }
+    status.remove();
+
+    for (const row of rows) {
+      const group = document.getElementById('group-' + String(row.Status).toLowerCase())
+                 || document.getElementById('group-completed');
+      group.classList.remove('hidden');
+      group.querySelector('.collection').append(buildCard(
+        EXHIBITION_MEDIA[row.ExhibitionTitle],
+        'exhibitions',
+        row.ExhibitionTitle,
+        [row.GalleryName, formatDate(row.StartDate) + ' – ' + formatDate(row.EndDate)],
+        row.Description
+      ));
+    }
+  } catch (e) {
+    status.textContent = 'Exhibitions could not be loaded. Refresh the page to try again.';
+  }
+}
+
+async function loadArtworks() {
+  const status = document.getElementById('artworks-status');
+  const box = document.getElementById('artworks');
+  try {
+    const response = await fetch('/api/public/artworks');
+    if (!response.ok) throw new Error('Unable to load');
+    const rows = await response.json();
+    if (!rows.length) { status.textContent = 'No artworks are listed right now.'; return; }
+    status.remove();
+
+    for (const row of rows) {
+      box.append(buildCard(
+        ARTWORK_MEDIA[row.Title],
+        'artworks',
+        row.Title,
+        [row.Medium, row.CreationYear ? String(row.CreationYear) : '']
+      ));
+    }
+  } catch (e) {
+    status.textContent = 'Artworks could not be loaded. Refresh the page to try again.';
+  }
+}
+
+loadExhibitions();
+loadArtworks();
+</script>
+</body>
+</html>
