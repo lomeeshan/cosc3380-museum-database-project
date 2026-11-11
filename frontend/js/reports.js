@@ -84,69 +84,6 @@
         money(sum(rows,'TotalRevenue'))
     },
     {
-      form: 'ticketSalesForm',
-      endpoint: '/api/reports/ticket-sales-by-exhibition',
-      type: 'tickets',
-      result: 'ticketResults',
-      message: 'ticketSalesMessage',
-      summary: 'ticketSummary',
-      target: 'ticketSalesRows',
-      columns: ['ExhibitionTitle','TicketsSold','UniqueVisitors','AdultTickets',
-        'ChildTickets','StudentTickets','SeniorTickets','Revenue'],
-      currency: ['Revenue'],
-      sourceTarget: 'ticketSourceRows',
-      sourceColumns: ['TicketID','VisitDate','VisitorID','VisitorName',
-        'Exhibition','TicketType','TicketPrice'],
-      sourceCurrency: ['TicketPrice'],
-      filters: () => ({
-        exhibitionId: value('salesExhibition'),
-        ticketType: value('salesTicketType'),
-        ...dateRange('salesStart','salesEnd')
-      }),
-      summarize: rows => 'Tickets sold: ' + sum(rows,'TicketsSold') +
-        ' | Revenue: ' + money(sum(rows,'Revenue')) +
-        ' | Exhibition rows: ' + rows.length
-    },
-    {
-      form: 'inventoryForm',
-      endpoint: '/api/reports/giftshop-inventory',
-      type: 'inventory',
-      result: 'inventoryResults',
-      message: 'inventoryMessage',
-      summary: 'inventorySummary',
-      target: 'inventoryRows',
-      columns: ['ProductName','Category','QuantityInStock','StockStatus',
-        'ProductStatus','InventoryValue','UnitsSold','SalesRevenue'],
-      currency: ['InventoryValue','SalesRevenue'],
-      sourceTarget: 'inventorySourceRows',
-      sourceColumns: ['ProductID','ProductName','Category','QuantityInStock',
-        'ProductStatus','SaleID','SaleDateTime','UnitsSold',
-        'UnitPriceAtSale','LineRevenue'],
-      sourceCurrency: ['UnitPriceAtSale','LineRevenue'],
-      filters: () => {
-        const threshold = Number(value('inventoryThreshold'));
-        if (!Number.isSafeInteger(threshold) || threshold < 1) {
-          throw new Error('Stock threshold must be a positive whole number.');
-        }
-        return {
-          category: value('inventoryCategory'),
-          threshold,
-          stock: value('inventoryStock'),
-          ...dateRange('inventoryStart','inventoryEnd')
-        };
-      },
-      summarize: rows => {
-        const lowCount = rows.filter(row =>
-          row.StockStatus === 'Low Stock' ||
-          row.StockStatus === 'Out of Stock').length;
-        return 'Products: ' + rows.length + ' | Low/out of stock: ' +
-          lowCount + ' | Inventory value: ' +
-          money(sum(rows,'InventoryValue')) + ' | Units sold: ' +
-          sum(rows,'UnitsSold') + ' | Period revenue: ' +
-          money(sum(rows,'SalesRevenue'));
-      }
-    },
-    {
       form: 'productsForm',
       endpoint: '/api/reports/giftshop-top-products',
       type: 'products',
@@ -230,34 +167,4 @@
       generateReport(config);
     });
   }
-
-  function selectOption(select, id, text) {
-    const option = document.createElement('option');
-    option.value = id;
-    option.textContent = text;
-    select.append(option);
-  }
-
-  async function loadFilters() {
-    try {
-      const exhibitions = await Museum.api('/api/entities/exhibitions');
-      exhibitions.forEach(ex => selectOption(el('salesExhibition'),
-        ex.ExhibitionID, ex.ExhibitionTitle));
-    } catch (err) {
-      Museum.notify('ticketSalesMessage', err.message, true);
-    }
-
-    try {
-      const products = await Museum.api('/api/entities/products');
-      const categories = [...new Set(products.map(p => p.Category)
-        .filter(Boolean))].sort();
-      categories.forEach(category =>
-        selectOption(el('inventoryCategory'), category, category));
-    } catch (err) {
-      Museum.notify('inventoryMessage', err.message, true);
-    }
-  }
-
-  // Loading dropdown filters is okay. Do NOT auto-run any report here.
-  await loadFilters();
 })();

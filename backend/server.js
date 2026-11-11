@@ -26,7 +26,7 @@ app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
 
 //frontend HTML, CSS, and JavaScript files.
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '../frontend'), { index: 'landing.html' }));
 
 //Check for whether the server can connect to MySQL.
 app.get('/api/health', async (req, res) => {
