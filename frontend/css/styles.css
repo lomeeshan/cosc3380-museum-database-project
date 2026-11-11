@@ -215,3 +215,64 @@ tbody tr:hover { background: #f4f1eb; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+
+/* Artwork images, "Image unavailable" placeholders, and exhibition banners.
+   All three share a 4:3 frame so collection cards line up. */
+.art-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--wall);
+}
+
+.image-unavailable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+  background: var(--wall);
+  border: 1px dashed var(--rule);
+  color: var(--muted);
+}
+.image-unavailable .label-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+}
+.image-unavailable .label-note {
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 22em;
+}
+
+/* Text banner used in place of an image (e.g. the Kahlo exhibition) */
+.exhibit-banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  padding: 22px;
+  box-sizing: border-box;
+  background: var(--gallery);
+  border-bottom: 4px solid var(--brass);
+  color: var(--paper);
+}
+.exhibit-banner .banner-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  line-height: 1.1;
+}
+.exhibit-banner .banner-note {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #d9d3c6;
+}
