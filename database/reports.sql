@@ -49,126 +49,54 @@ LEFT JOIN (
 ) AS g ON g.SaleMonth = m.SaleMonth
 ORDER BY m.SaleMonth;
 
-
-SET @ExhibitionID = NULL;          
-SET @TicketType   = NULL;          
-SET @StartDate    = '2026-01-01';  
-SET @EndDate      = '2026-12-31';  
-
-SELECT
-    ExhibitionTitle, GalleryName, Status, StartDate, EndDate,
-    TicketsSold, UniqueVisitors, Revenue, AvgTicketPrice,
-    AdultTickets, ChildTickets, StudentTickets, SeniorTickets,
-    ROUND(100 * Revenue / NULLIF((
-        SELECT SUM(TicketPrice)
-        FROM TICKET
-        WHERE VisitDate BETWEEN COALESCE(@StartDate, '1000-01-01')
-                            AND COALESCE(@EndDate,   '9999-12-31')
-          AND (@TicketType IS NULL OR TicketType = @TicketType)
-    ), 0), 1) AS PctOfTotalRevenue
-FROM (
-
-    SELECT
-        ex.ExhibitionID,
-        ex.ExhibitionTitle,
-        g.GalleryName,
-        ex.Status,
-        ex.StartDate,
-        ex.EndDate,
-        COUNT(t.TicketID)                              AS TicketsSold,
-        COUNT(DISTINCT t.VisitorID)                    AS UniqueVisitors,
-        COALESCE(SUM(t.TicketPrice), 0)                AS Revenue,
-        ROUND(AVG(t.TicketPrice), 2)                   AS AvgTicketPrice,
-        COALESCE(SUM(t.TicketType = 'Adult'), 0)       AS AdultTickets,
-        COALESCE(SUM(t.TicketType = 'Child'), 0)       AS ChildTickets,
-        COALESCE(SUM(t.TicketType = 'Student'), 0)     AS StudentTickets,
-        COALESCE(SUM(t.TicketType = 'Senior'), 0)      AS SeniorTickets
-    FROM EXHIBITION ex
-    JOIN GALLERY g ON g.GalleryID = ex.GalleryID
-    LEFT JOIN TICKET t
-           ON t.ExhibitionID = ex.ExhibitionID
-          AND t.VisitDate BETWEEN COALESCE(@StartDate, '1000-01-01')
-                              AND COALESCE(@EndDate,   '9999-12-31')
-          AND (@TicketType IS NULL OR t.TicketType = @TicketType)
-    WHERE (@ExhibitionID IS NULL OR ex.ExhibitionID = @ExhibitionID)
-    GROUP BY ex.ExhibitionID, ex.ExhibitionTitle, g.GalleryName,
-             ex.Status, ex.StartDate, ex.EndDate
-
-    UNION ALL
-
-
-    SELECT
-        NULL, 'General Admission (no exhibition)', NULL, NULL, NULL, NULL,
-        COUNT(t.TicketID),
-        COUNT(DISTINCT t.VisitorID),
-        COALESCE(SUM(t.TicketPrice), 0),
-        ROUND(AVG(t.TicketPrice), 2),
-        COALESCE(SUM(t.TicketType = 'Adult'), 0),
-        COALESCE(SUM(t.TicketType = 'Child'), 0),
-        COALESCE(SUM(t.TicketType = 'Student'), 0),
-        COALESCE(SUM(t.TicketType = 'Senior'), 0)
-    FROM TICKET t
-    WHERE @ExhibitionID IS NULL
-      AND t.ExhibitionID IS NULL
-      AND t.VisitDate BETWEEN COALESCE(@StartDate, '1000-01-01')
-                          AND COALESCE(@EndDate,   '9999-12-31')
-      AND (@TicketType IS NULL OR t.TicketType = @TicketType)
-    HAVING COUNT(t.TicketID) > 0
-) AS report
-ORDER BY (ExhibitionID IS NULL), Revenue DESC, ExhibitionTitle;
-
-
--- GIFT SHOP INVENTORY AND LOW STOCK
--- @StartDate / @EndDate filter ONLY the completed sales counted in
--- UnitsSold, SalesRevenue and LastSoldOn (the "sold" subquery).
--- QuantityInStock, StockStatus and InventoryValue are always the
--- CURRENT stock snapshot and do not change with the date range.
--- Set both dates to NULL to count all completed sales.
-SET @Category  = NULL;    
-SET @Threshold = 5;       
-SET @Stock     = 'all';  
+-- REPORT 2: BEST-SELLING GIFT SHOP PRODUCTS
+-- Set dates to NULL to include all completed sales.
 SET @StartDate = NULL;
-SET @EndDate   = NULL;
+SET @EndDate = NULL;
 
 SELECT
     p.ProductID,
     p.ProductName,
     p.Category,
-    p.CurrentPrice,
-    p.QuantityInStock,
-    CASE
-        WHEN p.QuantityInStock = 0                       THEN 'Out of Stock'
-        WHEN p.QuantityInStock < COALESCE(@Threshold, 5) THEN 'Low Stock'
-        ELSE 'In Stock'
-    END                                                        AS StockStatus,
-    CASE WHEN p.IsActive = 1 THEN 'Active' ELSE 'Inactive' END AS ProductStatus,
-    p.CurrentPrice * p.QuantityInStock                         AS InventoryValue,
-    COALESCE(sold.UnitsSold, 0)                                AS UnitsSold,
-    COALESCE(sold.SalesRevenue, 0)                             AS SalesRevenue,
-    sold.LastSoldOn
-FROM GIFTSHOP_PRODUCT p
-LEFT JOIN (
-    -- Completed sales only, limited to the selected date range
-    SELECT
-        si.ProductID,
-        SUM(si.Quantity)                      AS UnitsSold,
-        SUM(si.Quantity * si.UnitPriceAtSale) AS SalesRevenue,
-        MAX(s.SaleDateTime)                   AS LastSoldOn
-    FROM GIFTSHOP_SALE_ITEM si
-    JOIN GIFTSHOP_SALE s ON s.SaleID = si.SaleID
-    WHERE s.SaleStatus = 'Completed'
-      AND DATE(s.SaleDateTime) BETWEEN COALESCE(@StartDate, '1000-01-01')
-                                   AND COALESCE(@EndDate,   '9999-12-31')
-    GROUP BY si.ProductID
-) AS sold ON sold.ProductID = p.ProductID
-WHERE (@Category IS NULL OR p.Category = @Category)
-  AND (COALESCE(@Stock, 'all') = 'all'
-       OR p.QuantityInStock < COALESCE(@Threshold, 5))
-ORDER BY
-    CASE
-        WHEN p.QuantityInStock = 0                       THEN 1
-        WHEN p.QuantityInStock < COALESCE(@Threshold, 5) THEN 2
-        ELSE 3
-    END,
-    p.QuantityInStock,
-    p.ProductName;
+    SUM(si.Quantity) AS UnitsSold,
+    COUNT(DISTINCT s.SaleID) AS SaleCount,
+    ROUND(SUM(si.Quantity * si.UnitPriceAtSale), 2) AS SalesRevenue
+FROM GIFTSHOP_SALE_ITEM si
+JOIN GIFTSHOP_SALE s
+    ON s.SaleID = si.SaleID
+JOIN GIFTSHOP_PRODUCT p
+    ON p.ProductID = si.ProductID
+WHERE s.SaleStatus = 'Completed'
+  AND DATE(s.SaleDateTime)
+      BETWEEN COALESCE(@StartDate, '1000-01-01')
+          AND COALESCE(@EndDate, '9999-12-31')
+GROUP BY p.ProductID, p.ProductName, p.Category
+ORDER BY UnitsSold DESC, SalesRevenue DESC, p.ProductName;
+
+
+-- REPORT 3: VISITORS BY EXHIBITION
+-- Counts ticketed visits, not scanned attendance.
+SET @StartDate = NULL;
+SET @EndDate = NULL;
+
+SELECT
+    ex.ExhibitionID,
+    ex.ExhibitionTitle,
+    COUNT(t.TicketID) AS TicketsSold,
+    COUNT(DISTINCT t.VisitorID) AS UniqueVisitors,
+    COALESCE(SUM(CASE WHEN t.TicketType = 'Adult'
+        THEN 1 ELSE 0 END), 0) AS AdultTickets,
+    COALESCE(SUM(CASE WHEN t.TicketType = 'Child'
+        THEN 1 ELSE 0 END), 0) AS ChildTickets,
+    COALESCE(SUM(CASE WHEN t.TicketType = 'Student'
+        THEN 1 ELSE 0 END), 0) AS StudentTickets,
+    COALESCE(SUM(CASE WHEN t.TicketType = 'Senior'
+        THEN 1 ELSE 0 END), 0) AS SeniorTickets
+FROM EXHIBITION ex
+LEFT JOIN TICKET t
+    ON t.ExhibitionID = ex.ExhibitionID
+   AND t.VisitDate
+       BETWEEN COALESCE(@StartDate, '1000-01-01')
+           AND COALESCE(@EndDate, '9999-12-31')
+GROUP BY ex.ExhibitionID, ex.ExhibitionTitle
+ORDER BY TicketsSold DESC, ex.ExhibitionTitle;
