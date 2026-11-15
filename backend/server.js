@@ -62,6 +62,9 @@ app.use('/api/customer/giftshop', require('./routes/customerGiftShop'));
 // Eeshan's Curator-only artwork maintenance
 app.use('/api/artworks', require('./routes/artworkMaintenance'));
 
+// Trigger-generated notifications for museum employees
+app.use('/api/notifications', require('./routes/notifications'));
+
 // Alaric's crud routes
 app.use('/api/entities', require('./routes/entities'));
 

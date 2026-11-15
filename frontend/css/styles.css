@@ -869,6 +869,7 @@ tbody tr:hover { background: rgba(243, 237, 227, 0.035); }
 }
 .donate h2 { font-size: clamp(44px, 5.5vw, 80px); line-height: .95; margin-bottom: 18px; }
 .donate p { color: var(--ink-soft); font-size: 18px; }
+.donate-note { font-size: 13px !important; color: var(--muted) !important; margin: 16px 0 0; max-width: 46ch; }
 .tiers { display: grid; gap: 12px; }
 .tier {
   display: grid;

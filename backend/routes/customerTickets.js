@@ -28,6 +28,22 @@ function validVisitDate(value) {
         date.toISOString().slice(0, 10) === value;
 }
 
+// Get today's date using the museum's local time zone.
+function todayInMuseumTimeZone() {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Chicago',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(new Date());
+
+    const values = Object.fromEntries(
+        parts.map(part => [part.type, part.value])
+    );
+
+    return `${values.year}-${values.month}-${values.day}`;
+}
+
 router.use(requireCustomer);
 
 // Also check that the customer account is still active
@@ -96,37 +112,52 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     const { exhibitionId, ticketType, visitDate } = req.body || {};
 
-    const selectedExhibition = Number(exhibitionId);
+    // NULL exhibitionID means general admission
+    const isGeneralAdmission =
+        exhibitionId === null || exhibitionId === '';
+
+    const selectedExhibition = isGeneralAdmission
+        ? null
+        : Number(exhibitionId);
 
     if (
-        !Number.isSafeInteger(selectedExhibition) ||
-        selectedExhibition < 1 ||
-        !Object.hasOwn(PRICE, ticketType) ||
-        !validVisitDate(visitDate)
+        (!isGeneralAdmission &&
+            (!Number.isSafeInteger(selectedExhibition) ||
+                selectedExhibition < 1)) ||
+            !Object.hasOwn(PRICE, ticketType) ||
+            !validVisitDate(visitDate)
     ) {
-        return res.status(400).json({
-            error: 'Select a valid exhibition, ticket type, and visit date.'
-        });
-    }
+    return res.status(400).json({
+        error: 'Select a valid admission, ticket type, and visit date.'
+    });
+}
+
+    if (visitDate < todayInMuseumTimeZone()) {
+    return res.status(400).json({
+        error: 'Visit date cannot be in the past.'
+    });
+}
 
     try {
-        // Confirm that the exhibition is available on that date
-        const [exhibitions] = await db.execute(
-            `SELECT ExhibitionID
-             FROM EXHIBITION
-             WHERE ExhibitionID = ?
-               AND Status IN ('Active', 'Upcoming')
-               AND ? BETWEEN StartDate AND EndDate
-               AND ? >= CURDATE()`,
+        // General Admission does not require an exhibition.
+        // Exhibition-specific tickets still require a valid exhibition.
+        if (!isGeneralAdmission) {
+            const [exhibitions] = await db.execute(
+                `SELECT ExhibitionID
+                FROM EXHIBITION
+                WHERE ExhibitionID = ?
+                AND Status IN ('Active', 'Upcoming')
+                AND ? BETWEEN StartDate AND EndDate
+                AND ? >= CURDATE()`,
             [selectedExhibition, visitDate, visitDate]
-        );
+    );
 
-        if (exhibitions.length === 0) {
-            return res.status(409).json({
-                error: 'This exhibition is not available on the selected date.'
-            });
-        }
-
+    if (exhibitions.length === 0) {
+        return res.status(409).json({
+            error: 'This exhibition is not available on the selected date.'
+        });
+    }
+}
         const price = PRICE[ticketType];
 
         // VisitorID comes from the verified login session

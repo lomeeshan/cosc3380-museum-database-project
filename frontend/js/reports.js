@@ -94,6 +94,9 @@
       result: 'revenueResults',
       message: 'revenueMessage',
       summary: 'revenueSummary',
+      target: 'revenueRows',
+      columns: ['SaleMonth','TicketRevenue','GiftShopRevenue','TotalRevenue'],
+      currency: ['TicketRevenue','GiftShopRevenue','TotalRevenue'],
       sourceTarget: 'revenueSourceRows',
       sourceCount: 'revenueSourceCount',
       sourceColumns: ['RecordID','Source','RecordedAt','Description','Quantity','UnitPrice','Amount'],
@@ -116,6 +119,10 @@
       result: 'productsResults',
       message: 'productsMessage',
       summary: 'productsSummary',
+      target: 'productsRows',
+      columns: ['ProductID','ProductName','Category','UnitsSold','SaleCount',
+        'SalesRevenue'],
+      currency: ['SalesRevenue'],
       sourceTarget: 'productsSourceRows',
       sourceCount: 'productsSourceCount',
       sourceColumns: ['SaleID','SaleDateTime','ProductID','ProductName',
@@ -136,6 +143,10 @@
       result: 'visitorsResults',
       message: 'visitorsMessage',
       summary: 'visitorsSummary',
+      target: 'visitorsRows',
+      columns: ['ExhibitionID','ExhibitionTitle','AdultTickets','ChildTickets',
+        'StudentTickets','SeniorTickets','TicketsSold','UniqueVisitors'],
+      currency: [],
       sourceTarget: 'visitorsSourceRows',
       sourceCount: 'visitorsSourceCount',
       sourceColumns: ['TicketID','VisitDate','VisitorID','VisitorName',
@@ -180,6 +191,7 @@
         throw new Error('Unexpected report response.');
       }
 
+      fillTable(config.target, config.columns, rows, config.currency);
       fillTable(config.sourceTarget, config.sourceColumns,
         sourceRows, config.sourceCurrency);
       renderStats(config.summary, config.summarize(rows));

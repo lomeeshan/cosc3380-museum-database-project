@@ -46,6 +46,15 @@
     EXHIBITION_MEDIA, TICKET_PRICES } = Site;
   const el = id => document.getElementById(id);
 
+  // Today's date in the museum's time zone (matches the backend check).
+  function museumToday() {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(new Date());
+    const v = Object.fromEntries(parts.map(p => [p.type, p.value]));
+    return v.year + '-' + v.month + '-' + v.day;
+  }
+
   // ---------- Account ----------
   try {
     const { user } = await api('/api/customer/me');
@@ -69,7 +78,7 @@
     );
     const stub = make('div', 'stub');
     const price = make('div');
-    price.append(make('small', 'muted', 'Paid'), make('strong', '', money(ticket.TicketPrice)));
+    price.append(make('small', 'muted', 'Ticket price'), make('strong', '', money(ticket.TicketPrice)));
     stub.append(price, make('span', 'id', '#' + ticket.TicketID));
     card.append(main, stub);
     return card;
@@ -81,7 +90,7 @@
     box.replaceChildren();
     el('statTickets').textContent = rows.length;
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = museumToday();
     const upcoming = rows.map(t => t.VisitDate).filter(d => d && d >= today).sort();
     el('statNextVisit').textContent = upcoming.length
       ? formatDate(upcoming[0], { month: 'short', day: 'numeric' }) : 'Not booked';
@@ -106,9 +115,13 @@
   const select = el('exhibitionId');
   const visitDate = el('visitDate');
   const bookButton = el('purchaseForm').querySelector('button[type="submit"]');
-  const today = new Date().toISOString().slice(0, 10);
+  const today = museumToday();
   visitDate.min = today;
   let available = [];
+
+  // General Admission: no exhibition, sent to the API as null.
+  const GENERAL = 'general';
+  const GENERAL_MEDIA = { src: '../artworks/the-rocks.jpg' };
 
   const chosenType = () =>
     document.querySelector('input[name="ticketType"]:checked')?.value || 'Adult';
@@ -122,6 +135,17 @@
     const chosen = available.find(ex => String(ex.ExhibitionID) === select.value);
     const box = el('bookMedia');
     box.querySelector('.art-image, .image-unavailable, .exhibit-banner')?.remove();
+    if (select.value === GENERAL) {
+      box.prepend(media(GENERAL_MEDIA, 'exhibitions', 'General Admission'));
+      el('bookTitle').textContent = 'General Admission';
+      el('bookStatus').textContent = 'Any day';
+      el('bookMeta').textContent = 'Entry to the permanent collection galleries';
+      // General Admission has no exhibition end date.
+      visitDate.min = today;
+      visitDate.removeAttribute('max');
+      if (visitDate.value && visitDate.value < visitDate.min) visitDate.value = '';
+      return;
+    }
     if (!chosen) {
       el('bookTitle').textContent = 'No exhibitions available';
       el('bookMeta').textContent = '';
@@ -149,14 +173,11 @@
   try {
     const exhibitions = await api('/api/public/exhibitions');
     select.replaceChildren();
+    const general = make('option', '', 'General Admission');
+    general.value = GENERAL;
+    select.append(general);
     available = exhibitions.filter(ex =>
       ['Active','Upcoming'].includes(ex.Status) && ex.EndDate >= today);
-    if (!available.length) {
-      const opt = make('option', '', 'No exhibitions available');
-      opt.value = '';
-      select.append(opt);
-      bookButton.disabled = true;
-    }
     for (const ex of available) {
       const opt = make('option', '', ex.ExhibitionTitle);
       opt.value = ex.ExhibitionID;
@@ -170,7 +191,7 @@
   el('purchaseForm').addEventListener('submit', async e => {
     e.preventDefault();
     const body = {
-      exhibitionId: Number(select.value),
+      exhibitionId: select.value === GENERAL ? null : Number(select.value),
       ticketType: chosenType(),
       visitDate: visitDate.value
     };

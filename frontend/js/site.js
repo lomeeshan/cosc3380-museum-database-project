@@ -1,6 +1,7 @@
 // Shared helpers for the public pages (landing + customer account).
 window.Site = (() => {
-  // Where the "Donate" buttons send people.
+  // Where the "Donate" buttons send people: the real Museum of Fine Arts,
+  // Houston. This demo collects no donations itself.
   const DONATION_URL = 'https://www.mfah.org/support';
 
   // Ticket prices shown to customers. The server sets the real price
@@ -135,6 +136,7 @@ window.Site = (() => {
       link.href = DONATION_URL;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
+      link.title = 'Opens the Museum of Fine Arts, Houston website (external)';
     }
   }
 
