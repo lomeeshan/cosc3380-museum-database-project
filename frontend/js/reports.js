@@ -10,7 +10,8 @@
 
   const el = id => document.getElementById(id);
   const value = id => el(id).value;
-  const money = n => '$' + Number(n || 0).toFixed(2);
+  const money = n => '$' + Number(n || 0).toLocaleString('en-US',
+    { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const sum = (rows, key) =>
     rows.reduce((total, row) => total + Number(row[key] || 0), 0);
 
@@ -43,6 +44,33 @@
     });
     // Museum.table uses textContent: source text is safely escaped.
     Museum.table(target, columns, formatted);
+
+    // Right-align cells whose column header is marked numeric.
+    const headers = el(target).closest('table').querySelectorAll('thead th');
+    for (const tr of el(target).rows) {
+      if (tr.cells.length === 1) continue; // "No records found." row
+      [...tr.cells].forEach((td, i) => {
+        if (headers[i]?.classList.contains('num')) td.classList.add('num');
+      });
+    }
+  }
+
+  // Render summary figures as stat tiles: [{ label, value, accent? }]
+  function renderStats(target, stats) {
+    const grid = el(target);
+    grid.replaceChildren();
+    for (const stat of stats) {
+      const tile = document.createElement('div');
+      tile.className = 'stat' + (stat.accent ? ' accent' : '');
+      const label = document.createElement('span');
+      label.className = 'stat-label';
+      label.textContent = stat.label;
+      const val = document.createElement('span');
+      val.className = 'stat-value';
+      val.textContent = String(stat.value);
+      tile.append(label, val);
+      grid.append(tile);
+    }
   }
 
   for (const button of document.querySelectorAll('[data-report-tab]')) {
@@ -51,9 +79,7 @@
         panel.hidden = panel.id !== button.dataset.reportTab;
       });
       document.querySelectorAll('[data-report-tab]').forEach(other => {
-        const selected = other === button;
-        other.classList.toggle('secondary', !selected);
-        other.setAttribute('aria-selected', String(selected));
+        other.setAttribute('aria-selected', String(other === button));
       });
     });
   }
@@ -68,20 +94,20 @@
       result: 'revenueResults',
       message: 'revenueMessage',
       summary: 'revenueSummary',
-      target: 'revenueRows',
-      columns: ['SaleMonth','TicketRevenue','GiftShopRevenue','TotalRevenue'],
-      currency: ['TicketRevenue','GiftShopRevenue','TotalRevenue'],
       sourceTarget: 'revenueSourceRows',
+      sourceCount: 'revenueSourceCount',
       sourceColumns: ['RecordID','Source','RecordedAt','Description','Quantity','UnitPrice','Amount'],
       sourceCurrency: ['UnitPrice','Amount'],
       filters: () => ({
         source: value('revenueSource'),
         ...dateRange('revenueStart','revenueEnd')
       }),
-      summarize: rows => rows.length + ' month(s) | Ticket sales: ' +
-        money(sum(rows,'TicketRevenue')) + ' | Gift shop: ' +
-        money(sum(rows,'GiftShopRevenue')) + ' | Total: ' +
-        money(sum(rows,'TotalRevenue'))
+      summarize: rows => [
+        { label: 'Total revenue', value: money(sum(rows,'TotalRevenue')), accent: true },
+        { label: 'Ticket sales', value: money(sum(rows,'TicketRevenue')) },
+        { label: 'Gift shop', value: money(sum(rows,'GiftShopRevenue')) },
+        { label: 'Months covered', value: rows.length }
+      ]
     },
     {
       form: 'productsForm',
@@ -90,18 +116,18 @@
       result: 'productsResults',
       message: 'productsMessage',
       summary: 'productsSummary',
-      target: 'productsRows',
-      columns: ['ProductID','ProductName','Category','UnitsSold','SaleCount',
-        'SalesRevenue'],
-      currency: ['SalesRevenue'],
       sourceTarget: 'productsSourceRows',
+      sourceCount: 'productsSourceCount',
       sourceColumns: ['SaleID','SaleDateTime','ProductID','ProductName',
         'UnitsSold','UnitPriceAtSale','LineRevenue'],
       sourceCurrency: ['UnitPriceAtSale','LineRevenue'],
       filters: () => dateRange('productsStart','productsEnd'),
-      summarize: rows => 'Products sold: ' + rows.length +
-        ' | Units sold: ' + sum(rows,'UnitsSold') +
-        ' | Sales revenue: ' + money(sum(rows,'SalesRevenue'))
+      summarize: rows => [
+        { label: 'Sales revenue', value: money(sum(rows,'SalesRevenue')), accent: true },
+        { label: 'Units sold', value: sum(rows,'UnitsSold') },
+        { label: 'Products sold', value: rows.length },
+        { label: 'Top seller', value: rows[0]?.ProductName || '—' }
+      ]
     },
     {
       form: 'visitorsForm',
@@ -110,27 +136,33 @@
       result: 'visitorsResults',
       message: 'visitorsMessage',
       summary: 'visitorsSummary',
-      target: 'visitorsRows',
-      columns: ['ExhibitionID','ExhibitionTitle','AdultTickets','ChildTickets',
-        'StudentTickets','SeniorTickets','TicketsSold','UniqueVisitors'],
-      currency: [],
       sourceTarget: 'visitorsSourceRows',
+      sourceCount: 'visitorsSourceCount',
       sourceColumns: ['TicketID','VisitDate','VisitorID','VisitorName',
         'Exhibition','TicketType','TicketPrice'],
       sourceCurrency: ['TicketPrice'],
       filters: () => dateRange('visitorsStart','visitorsEnd'),
-      summarize: rows => 'Ticketed visits: ' + sum(rows,'TicketsSold') +
-        ' | Adults: ' + sum(rows,'AdultTickets') +
-        ' | Children: ' + sum(rows,'ChildTickets') +
-        ' | Students: ' + sum(rows,'StudentTickets') +
-        ' | Seniors: ' + sum(rows,'SeniorTickets')
+      summarize: rows => [
+        { label: 'Ticketed visits', value: sum(rows,'TicketsSold'), accent: true },
+        { label: 'Adults', value: sum(rows,'AdultTickets') },
+        { label: 'Children', value: sum(rows,'ChildTickets') },
+        { label: 'Students', value: sum(rows,'StudentTickets') },
+        { label: 'Seniors', value: sum(rows,'SeniorTickets') }
+      ]
     }
   ];
 
   async function generateReport(config) {
     // Hide any previous result immediately; prevents misleading stale data.
     el(config.result).hidden = true;
-    Museum.notify(config.message, '');
+    const message = el(config.message);
+    message.textContent = '';
+    message.className = '';
+
+    const button = el(config.form).querySelector('button[type="submit"]');
+    const label = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Generating…';
 
     try {
       const filters = config.filters();
@@ -148,16 +180,17 @@
         throw new Error('Unexpected report response.');
       }
 
-      fillTable(config.target, config.columns, rows, config.currency);
       fillTable(config.sourceTarget, config.sourceColumns,
         sourceRows, config.sourceCurrency);
-      el(config.summary).textContent = config.summarize(rows);
+      renderStats(config.summary, config.summarize(rows));
+      el(config.sourceCount).textContent =
+        sourceRows.length + (sourceRows.length === 1 ? ' record' : ' records');
       el(config.result).hidden = false;
-      Museum.notify(config.message,
-        'Report generated. ' + sourceRows.length +
-        ' underlying source row(s) available below.');
     } catch (err) {
       Museum.notify(config.message, err.message, true);
+    } finally {
+      button.disabled = false;
+      button.textContent = label;
     }
   }
 
