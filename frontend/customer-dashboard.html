@@ -49,23 +49,24 @@
           <div>
             <p class="eyebrow">Reserve</p>
             <h2>Book your <em>visit</em></h2>
+            <p class="muted small" style="margin:10px 0 0">* indicates a required field.</p>
           </div>
 
           <div class="field">
-            <label for="exhibitionId">Admission / Exhibition</label>
+            <label for="exhibitionId">Admission / Exhibition *</label>
             <select id="exhibitionId" required></select>
           </div>
 
           <fieldset class="type-grid" id="ticketType">
-            <legend>Ticket type</legend>
-            <div class="type-option"><input type="radio" name="ticketType" id="tt-adult" value="Adult" checked><label for="tt-adult"><span>Adult</span><strong>$20</strong></label></div>
+            <legend>Ticket type *</legend>
+            <div class="type-option"><input type="radio" name="ticketType" id="tt-adult" value="Adult" checked required><label for="tt-adult"><span>Adult</span><strong>$20</strong></label></div>
             <div class="type-option"><input type="radio" name="ticketType" id="tt-student" value="Student"><label for="tt-student"><span>Student</span><strong>$12</strong></label></div>
             <div class="type-option"><input type="radio" name="ticketType" id="tt-senior" value="Senior"><label for="tt-senior"><span>Senior</span><strong>$14</strong></label></div>
             <div class="type-option"><input type="radio" name="ticketType" id="tt-child" value="Child"><label for="tt-child"><span>Child</span><strong>$8</strong></label></div>
           </fieldset>
 
           <div class="field">
-            <label for="visitDate">Visit date</label>
+            <label for="visitDate">Visit date *</label>
             <input id="visitDate" type="date" required>
           </div>
 
