@@ -8,18 +8,28 @@
 </head>
 <body>
 <main id="content">
-  <h1>Museum Reports</h1>
-  <p class="subtitle">Generate a report, then inspect the source records behind the totals.</p>
-  <div class="actions report-tabs" role="tablist" aria-label="Museum reports">
-    <button type="button" class="btn" data-report-tab="revenuePanel">Revenue</button>
-    <button type="button" class="btn secondary" data-report-tab="productsPanel">Top Products</button>
-    <button type="button" class="btn secondary" data-report-tab="visitorsPanel">Visitor Breakdown</button>
+  <header class="report-header">
+    <div>
+      <p class="eyebrow">Analysis</p>
+      <h1>Museum Reports</h1>
+      <p class="subtitle">Generate a report to see the totals and every source record behind them.</p>
+    </div>
+  </header>
+
+
+  <div class="report-tabs" role="tablist" aria-label="Museum reports">
+    <button type="button" class="report-tab" role="tab" data-report-tab="revenuePanel">Revenue</button>
+    <button type="button" class="report-tab" role="tab" data-report-tab="productsPanel">Top Products</button>
+    <button type="button" class="report-tab" role="tab" data-report-tab="visitorsPanel">Visitor Breakdown</button>
   </div>
 
-  <section class="card" id="revenuePanel" data-report-panel>
-    <h2>Combined Museum Revenue</h2>
-    <p>Monthly revenue from tickets and completed gift-shop purchases.</p>
-    <form id="revenueForm">
+  <!-- Revenue -->
+  <section class="card report-panel" id="revenuePanel" role="tabpanel" data-report-panel>
+    <div class="panel-head">
+      <h2>Combined Museum Revenue</h2>
+      <p class="muted">Monthly revenue from tickets and completed gift-shop purchases.</p>
+    </div>
+    <form id="revenueForm" class="report-form">
       <div class="gridform">
         <div class="field"><label for="revenueSource">Revenue source</label>
           <select id="revenueSource">
@@ -34,27 +44,39 @@
       <div class="formfooter"><button class="btn" type="submit">Generate Revenue Report</button></div>
     </form>
     <p id="revenueMessage" aria-live="polite"></p>
-    <div id="revenueResults" hidden>
-      <p class="notice report-summary" id="revenueSummary" aria-live="polite"></p>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Month</th><th>Ticket Revenue ($)</th><th>Gift Shop Revenue ($)</th><th>Total Revenue ($)</th></tr></thead>
-        <tbody id="revenueRows"></tbody>
-      </table></div>
-      <details>
-        <summary>View actual ticket and gift-shop source records</summary>
-        <p>Ticket IDs start with T; gift-shop sale/item IDs start with G. Completed gift-shop sales only.</p>
-        <div class="tablewrap"><table>
-          <thead><tr><th>Record ID</th><th>Source</th><th>Recorded at</th><th>Description</th><th>Qty</th><th>Unit Price ($)</th><th>Amount ($)</th></tr></thead>
+    <div id="revenueResults" class="report-results" hidden>
+      <div class="stat-grid" id="revenueSummary" aria-live="polite"></div>
+
+      <div class="result-block">
+        <div class="result-head"><h3>Monthly totals</h3></div>
+        <div class="tablewrap"><table class="report-table">
+          <thead><tr><th>Month</th><th class="num">Ticket Revenue ($)</th><th class="num">Gift Shop Revenue ($)</th><th class="num">Total Revenue ($)</th></tr></thead>
+          <tbody id="revenueRows"></tbody>
+        </table></div>
+      </div>
+
+
+      <div class="result-block">
+        <div class="result-head">
+          <h3>Source records</h3>
+          <span class="pill" id="revenueSourceCount"></span>
+        </div>
+        <p class="muted small">Ticket IDs start with T; gift-shop sale/item IDs start with G. Completed gift-shop sales only.</p>
+        <div class="tablewrap scroll"><table class="report-table">
+          <thead><tr><th>Record ID</th><th>Source</th><th>Recorded at</th><th>Description</th><th class="num">Qty</th><th class="num">Unit Price ($)</th><th class="num">Amount ($)</th></tr></thead>
           <tbody id="revenueSourceRows"></tbody>
         </table></div>
-      </details>
+      </div>
     </div>
   </section>
 
-  <section class="card" id="productsPanel" data-report-panel hidden>
-    <h2>Best-Selling Gift Shop Products</h2>
-    <p>Ranked by units sold, using only completed sales and the price at the time of sale.</p>
-    <form id="productsForm">
+  <!-- Top products -->
+  <section class="card report-panel" id="productsPanel" role="tabpanel" data-report-panel hidden>
+    <div class="panel-head">
+      <h2>Best-Selling Gift Shop Products</h2>
+      <p class="muted">Ranked by units sold, using only completed sales and the price at the time of sale.</p>
+    </div>
+    <form id="productsForm" class="report-form">
       <div class="gridform">
         <div class="field"><label for="productsStart">Sales start date</label><input id="productsStart" type="date"></div>
         <div class="field"><label for="productsEnd">Sales end date</label><input id="productsEnd" type="date"></div>
@@ -62,26 +84,38 @@
       <div class="formfooter"><button type="submit" class="btn">Generate Top Products Report</button></div>
     </form>
     <p id="productsMessage" aria-live="polite"></p>
-    <div id="productsResults" hidden>
-      <p class="notice report-summary" id="productsSummary" aria-live="polite"></p>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Product ID</th><th>Product</th><th>Category</th><th>Units Sold</th><th>Sales</th><th>Revenue ($)</th></tr></thead>
-        <tbody id="productsRows"></tbody>
-      </table></div>
-      <details>
-        <summary>View original completed gift-shop sale items</summary>
-        <div class="tablewrap"><table>
-          <thead><tr><th>Sale ID</th><th>Date/Time</th><th>Product ID</th><th>Product</th><th>Units</th><th>Sale Unit Price ($)</th><th>Line Revenue ($)</th></tr></thead>
+    <div id="productsResults" class="report-results" hidden>
+      <div class="stat-grid" id="productsSummary" aria-live="polite"></div>
+
+      <div class="result-block">
+        <div class="result-head"><h3>Product ranking</h3></div>
+        <div class="tablewrap"><table class="report-table">
+          <thead><tr><th>Product ID</th><th>Product</th><th>Category</th><th class="num">Units Sold</th><th class="num">Sales</th><th class="num">Revenue ($)</th></tr></thead>
+          <tbody id="productsRows"></tbody>
+        </table></div>
+      </div>
+
+
+      <div class="result-block">
+        <div class="result-head">
+          <h3>Source records</h3>
+          <span class="pill" id="productsSourceCount"></span>
+        </div>
+        <div class="tablewrap scroll"><table class="report-table">
+          <thead><tr><th>Sale ID</th><th>Date/Time</th><th>Product ID</th><th>Product</th><th class="num">Units</th><th class="num">Sale Unit Price ($)</th><th class="num">Line Revenue ($)</th></tr></thead>
           <tbody id="productsSourceRows"></tbody>
         </table></div>
-      </details>
+      </div>
     </div>
   </section>
 
-  <section class="card" id="visitorsPanel" data-report-panel hidden>
-    <h2>Ticketed Visitors by Exhibition and Type</h2>
-    <p>Counts tickets for Adults, Children, Students and Seniors. Unique visitors count distinct VisitorIDs per exhibition. These are ticketed visits, not scanned attendance.</p>
-    <form id="visitorsForm">
+  <!-- Visitors -->
+  <section class="card report-panel" id="visitorsPanel" role="tabpanel" data-report-panel hidden>
+    <div class="panel-head">
+      <h2>Ticketed Visitors by Exhibition and Type</h2>
+      <p class="muted">Counts tickets for Adults, Children, Students and Seniors. Unique visitors count distinct VisitorIDs per exhibition. These are ticketed visits, not scanned attendance.</p>
+    </div>
+    <form id="visitorsForm" class="report-form">
       <div class="gridform">
         <div class="field"><label for="visitorsStart">Visit date from</label><input id="visitorsStart" type="date"></div>
         <div class="field"><label for="visitorsEnd">Visit date to</label><input id="visitorsEnd" type="date"></div>
@@ -89,19 +123,28 @@
       <div class="formfooter"><button type="submit" class="btn">Generate Visitor Breakdown Report</button></div>
     </form>
     <p id="visitorsMessage" aria-live="polite"></p>
-    <div id="visitorsResults" hidden>
-      <p class="notice report-summary" id="visitorsSummary" aria-live="polite"></p>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Exhibition ID</th><th>Exhibition</th><th>Adult</th><th>Child</th><th>Student</th><th>Senior</th><th>Total Tickets</th><th>Unique Visitors</th></tr></thead>
-        <tbody id="visitorsRows"></tbody>
-      </table></div>
-      <details>
-        <summary>View the actual ticket and visitor rows behind these counts</summary>
-        <div class="tablewrap"><table>
-          <thead><tr><th>Ticket ID</th><th>Visit Date</th><th>Visitor ID</th><th>Visitor</th><th>Exhibition</th><th>Ticket Type</th><th>Price ($)</th></tr></thead>
+    <div id="visitorsResults" class="report-results" hidden>
+      <div class="stat-grid" id="visitorsSummary" aria-live="polite"></div>
+
+      <div class="result-block">
+        <div class="result-head"><h3>By exhibition</h3></div>
+        <div class="tablewrap"><table class="report-table">
+          <thead><tr><th>Exhibition ID</th><th>Exhibition</th><th class="num">Adult</th><th class="num">Child</th><th class="num">Student</th><th class="num">Senior</th><th class="num">Total Tickets</th><th class="num">Unique Visitors</th></tr></thead>
+          <tbody id="visitorsRows"></tbody>
+        </table></div>
+      </div>
+
+
+      <div class="result-block">
+        <div class="result-head">
+          <h3>Source records</h3>
+          <span class="pill" id="visitorsSourceCount"></span>
+        </div>
+        <div class="tablewrap scroll"><table class="report-table">
+          <thead><tr><th>Ticket ID</th><th>Visit Date</th><th>Visitor ID</th><th>Visitor</th><th>Exhibition</th><th>Ticket Type</th><th class="num">Price ($)</th></tr></thead>
           <tbody id="visitorsSourceRows"></tbody>
         </table></div>
-      </details>
+      </div>
     </div>
   </section>
 </main>

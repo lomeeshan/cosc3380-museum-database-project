@@ -1,74 +1,151 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>My Museum Tickets</title><link rel="stylesheet" href="/css/styles.css"></head>
-<body data-customer-page="dashboard"><main class="content" style="max-width:900px;margin:auto;padding:24px">
-<div class="actions"><h1>My Museum Account</h1><button id="customerLogout" class="btn secondary">Sign out</button>
-<a class="btn secondary" href="/landing.html">Browse museum</a></div>
-<p id="welcome"></p>
-<section class="card"><h2>Reserve a Demo Ticket</h2>
-<p class="muted">* indicates a required field.</p>
-<p>No actual payment is collected. Museum staff will verify the booking.</p>
-<form id="purchaseForm">
-<div class="gridform">
-<div class="field"><label for="exhibitionId">Admission / Exhibition *</label><select id="exhibitionId" required></select></div>
-<div class="field"><label for="ticketType">Ticket type *</label><select id="ticketType" required>
-<option>Adult</option><option>Student</option><option>Child</option><option>Senior</option></select></div>
-<div class="field"><label for="visitDate">Visit date *</label><input id="visitDate" type="date" required></div>
-</div><button class="btn" type="submit">Confirm demo ticket</button></form>
-<p id="customerMessage" aria-live="polite"></p>
-</section><section class="card"><h2>My Tickets</h2><div class="tablewrap"><table>
-<thead><tr><th>Ticket</th><th>Exhibition</th><th>Type</th><th>Visit date</th><th>Price</th></tr></thead>
-<tbody id="myTickets"></tbody></table></div></section>
-<section class="card">
-  <h2>Museum Gift Shop</h2>
-  <p>Browse museum products and make a demo purchase.
-     No actual payment is collected.</p>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Museum | MFA Museum</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-customer-page="dashboard">
 
-  <div class="tablewrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Category</th>
-          <th>Price</th>
-          <th>Availability</th>
-        </tr>
-      </thead>
-      <tbody id="giftShopProducts"></tbody>
-    </table>
-  </div>
+  <header class="site-header">
+    <a class="site-brand" href="/landing.html">MFA <span>Museum</span></a>
+    <nav class="site-nav" aria-label="Account">
+      <a href="#book">Book</a>
+      <a href="#tickets">My tickets</a>
+      <a href="#shop">Shop</a>
+      <a href="/landing.html">Explore</a>
+      <button type="button" class="link" id="customerLogout">Sign out</button>
+      <a class="btn" href="#donate">Donate</a>
+    </nav>
+  </header>
 
-  <h3>Purchase a Product</h3>
-  <p class="muted">* indicates a required field.</p>
-
-  <form id="customerGiftShopForm">
-    <div class="gridform">
-
-      <div class="field">
-        <label for="giftProductId">Product *</label>
-        <select id="giftProductId" required></select>
+  <main>
+    <!-- Welcome -->
+    <section class="dash-hero">
+      <img src="/images/exhibitions/rembrandt-to-monet.jpg" alt="">
+      <div class="inner">
+        <p class="eyebrow">Your museum</p>
+        <h1>Welcome back, <em id="welcome">friend.</em></h1>
+        <div class="dash-stats">
+          <span class="dash-stat">Tickets booked <strong id="statTickets">&mdash;</strong></span>
+          <span class="dash-stat">Next visit <strong id="statNextVisit">&mdash;</strong></span>
+        </div>
       </div>
+    </section>
 
-      <div class="field">
-        <label for="giftQuantity">Quantity *</label>
-        <input
-          id="giftQuantity"
-          type="number"
-          min="1"
-          max="20"
-          value="1"
-          required
-        >
+    <!-- Book a ticket -->
+    <section class="page-section" id="book">
+      <div class="book reveal">
+        <div class="book-media" id="bookMedia">
+          <div class="caption">
+            <p class="eyebrow" id="bookStatus">Exhibition</p>
+            <h3 id="bookTitle">Choose an exhibition</h3>
+            <p id="bookMeta"></p>
+          </div>
+        </div>
+
+        <form id="purchaseForm" class="book-form">
+          <div>
+            <p class="eyebrow">Reserve</p>
+            <h2>Book your <em>visit</em></h2>
+            <p class="muted small" style="margin:10px 0 0">* indicates a required field.</p>
+          </div>
+
+          <div class="field">
+            <label for="exhibitionId">Admission / Exhibition *</label>
+            <select id="exhibitionId" required></select>
+          </div>
+
+          <fieldset class="type-grid" id="ticketType">
+            <legend>Ticket type *</legend>
+            <div class="type-option"><input type="radio" name="ticketType" id="tt-adult" value="Adult" checked required><label for="tt-adult"><span>Adult</span><strong>$20</strong></label></div>
+            <div class="type-option"><input type="radio" name="ticketType" id="tt-student" value="Student"><label for="tt-student"><span>Student</span><strong>$12</strong></label></div>
+            <div class="type-option"><input type="radio" name="ticketType" id="tt-senior" value="Senior"><label for="tt-senior"><span>Senior</span><strong>$14</strong></label></div>
+            <div class="type-option"><input type="radio" name="ticketType" id="tt-child" value="Child"><label for="tt-child"><span>Child</span><strong>$8</strong></label></div>
+          </fieldset>
+
+          <div class="field">
+            <label for="visitDate">Visit date *</label>
+            <input id="visitDate" type="date" required>
+          </div>
+
+          <div class="book-total">
+            <div><small class="muted">Total</small><strong id="bookTotal">$20</strong></div>
+            <button class="btn lg" type="submit">Reserve ticket <span class="arrow" aria-hidden="true">&rarr;</span></button>
+          </div>
+          <p id="customerMessage" aria-live="polite"></p>
+          <p class="muted small" style="margin:0">Demo booking: no payment is collected. Staff verify bookings at the door.</p>
+        </form>
       </div>
+    </section>
 
+    <!-- My tickets -->
+    <section class="page-section" id="tickets">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow">Wallet</p>
+          <h2>My tickets</h2>
+        </div>
+        <p>Show the ticket number at the front desk on the day of your visit.</p>
+      </div>
+      <div class="tickets" id="myTickets"></div>
+    </section>
+
+    <!-- Gift shop -->
+    <section class="page-section" id="shop">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow">Museum store</p>
+          <h2>Take the <em>art</em> home</h2>
+        </div>
+        <p>Prints, books and objects inspired by the collection. Every purchase supports the museum.</p>
+      </div>
+      <p id="giftShopMessage" aria-live="polite"></p>
+      <div class="products" id="giftShopProducts"></div>
+    </section>
+
+    <!-- Donate -->
+    <section class="page-section" id="donate" style="padding-bottom:0">
+      <div class="donate reveal">
+        <img class="bg" src="/images/artworks/water-lilies.jpg" alt="" loading="lazy">
+        <div>
+          <p class="eyebrow">Support the museum</p>
+          <h2>Keep the masterpieces in the <em>light.</em></h2>
+          <p>Love art in Houston? Support the real Museum of Fine Arts, Houston directly on its website.</p>
+          <a class="btn lg" data-donate href="#">Donate on mfah.org <span aria-hidden="true">&#8599;</span></a>
+          <p class="donate-note">External link. This is a student demo; donations are made on the Museum of Fine Arts, Houston's official website, not through this site.</p>
+        </div>
+        <div class="tiers">
+          <a class="tier" data-donate href="#"><strong>$25</strong><span>Suggested gift &middot; opens mfah.org</span><span class="go" aria-hidden="true">&#8599;</span></a>
+          <a class="tier" data-donate href="#"><strong>$100</strong><span>Suggested gift &middot; opens mfah.org</span><span class="go" aria-hidden="true">&#8599;</span></a>
+          <a class="tier" data-donate href="#"><strong>$500</strong><span>Suggested gift &middot; opens mfah.org</span><span class="go" aria-hidden="true">&#8599;</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <a class="site-brand" href="/landing.html">MFA <span>Museum</span></a>
+      <p>Four centuries of art, open to everyone in Houston.</p>
     </div>
+    <div>
+      <h4>Your account</h4>
+      <a href="#book">Book a visit</a>
+      <a href="#tickets">My tickets</a>
+      <a href="#shop">Museum store</a>
+    </div>
+    <div>
+      <h4>Museum</h4>
+      <a href="/landing.html#exhibitions">Exhibitions</a>
+      <a href="/landing.html#collection">Collection</a>
+      <a data-donate href="#">Donate (mfah.org &#8599;)</a>
+    </div>
+    <p class="legal">A COSC 3380 Team 4 demo project. Ticket and gift-shop purchases are for demonstration only and no payment is collected. Donation links open the official Museum of Fine Arts, Houston website, which is not affiliated with this project.</p>
+  </footer>
 
-    <button class="btn" type="submit">
-      Complete Demo Purchase
-    </button>
-  </form>
-
-  <p id="giftShopMessage" aria-live="polite"></p>
-</section>
-
-</main><script defer src="/js/customer.js"></script></body></html>
+<script defer src="/js/site.js"></script>
+<script defer src="/js/customer.js"></script>
+</body>
+</html>

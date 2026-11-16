@@ -4,239 +4,233 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>MFA Museum | Exhibitions and Collection</title>
+  <meta name="description" content="Four centuries of art in Houston. See what is on view, explore the collection and reserve tickets.">
+  <link rel="preload" as="image" href="/images/artworks/great-wave.jpg">
   <link rel="stylesheet" href="/css/styles.css">
-  <style>
-    /* Styles used only by the public landing page */
-    .site-header {
-      position: sticky; top: 0; z-index: 5;
-      display: flex; justify-content: space-between; align-items: center; gap: 16px;
-      padding: 14px 32px;
-      background: var(--paper);
-      border-bottom: 1px solid var(--rule);
-    }
-    .site-brand { font-family: var(--serif); font-size: 25px; color: var(--ink); text-decoration: none; }
-    .site-brand span { color: var(--brass); }
-
-    .hero {
-      display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center;
-      max-width: 1120px; margin: auto; padding: 64px 32px 48px;
-    }
-    .hero h1 { font-size: 54px; line-height: 1.04; margin-bottom: 20px; }
-    .hero p { font-size: 18px; margin: 0 0 28px; color: var(--muted); }
-    .hero figure { margin: 0; }
-    .hero img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
-    .hero figcaption { font-size: 13px; color: var(--muted); margin-top: 10px; }
-
-    .section { max-width: 1120px; margin: auto; padding: 28px 32px 56px; }
-    .section > h2 { font-size: 36px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); margin-bottom: 8px; }
-    .group-title { font-size: 16px; font-weight: 600; color: var(--muted); margin: 28px 0 14px; }
-
-    .collection { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 26px; }
-    .collection-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
-    .collection-card .art-image,
-    .collection-card .image-unavailable,
-    .collection-card .exhibit-banner { margin: 0; }
-    .collection-card .body { padding: 16px 18px 20px; }
-    .collection-card h3 { font-family: var(--serif); font-size: 21px; font-weight: 500; line-height: 1.2; margin: 0 0 8px; }
-    .collection-card .meta { font-size: 14px; color: var(--muted); margin: 0; }
-    .collection-card .desc { font-size: 15px; margin: 10px 0 0; }
-    .collection-card .credit { font-size: 12px; color: var(--muted); margin: 12px 0 0; }
-
-    .site-footer {
-      border-top: 1px solid var(--rule); padding: 24px 32px;
-      font-size: 14px; color: var(--muted); text-align: center;
-    }
-
-    @media (max-width: 800px) {
-      .site-header { padding: 12px 16px; }
-      .hero { grid-template-columns: 1fr; gap: 28px; padding: 36px 16px 24px; }
-      .hero h1 { font-size: 38px; }
-      .section { padding: 20px 16px 40px; }
-    }
-  </style>
 </head>
 <body>
 
   <header class="site-header">
-    <a class="site-brand" href="/">MFA <span>Museum</span></a>
-    <nav class="actions">
-      <a class="btn secondary" href="/login.html">Sign in</a>
-      <a class="btn" href="/customer-register.html">Create account</a>
+    <a class="site-brand" href="/landing.html">MFA <span>Museum</span></a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="#exhibitions">Exhibitions</a>
+      <a href="#collection">Collection</a>
+      <a href="#visit">Visit</a>
+      <a href="/login.html">Sign in</a>
+      <a class="btn" href="/customer-register.html">Get tickets</a>
     </nav>
   </header>
 
   <main>
-    <section class="hero">
-      <div>
-        <h1>Four centuries of art, open to everyone in Houston.</h1>
-        <p>See what is on view now, explore the collection, and create a free account to reserve admission tickets.</p>
-        <div class="actions">
-          <a class="btn" href="#exhibitions">See exhibitions</a>
-          <a class="btn secondary" href="/customer-register.html">Reserve tickets</a>
+    <!-- Hero -->
+    <section class="hero-full">
+      <div class="hero-media">
+        <img src="/images/artworks/great-wave.jpg" alt="Katsushika Hokusai, The Great Wave off Kanagawa: a towering wave curls over fishing boats with Mount Fuji in the distance">
+      </div>
+      <div class="hero-inner">
+        <p class="eyebrow">Museum of Fine Arts &middot; Houston</p>
+        <h1 class="hero-title">
+          <span class="line"><span>Four centuries.</span></span>
+          <span class="line"><span>One <em>unforgettable</em></span></span>
+          <span class="line"><span>afternoon.</span></span>
+        </h1>
+        <p class="hero-lede">From Hokusai's wave to Monet's lilies and Houston's own voices. Step inside the collection and see the works that changed how the world sees.</p>
+        <div class="hero-cta">
+          <a class="btn lg" href="/customer-register.html">Reserve your tickets <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="btn secondary lg" href="#exhibitions">What's on view</a>
+        </div>
+        <div class="hero-foot">
+          <span>Katsushika Hokusai, <em>The Great Wave off Kanagawa</em>, c. 1831</span>
+          <span class="scroll-cue">Scroll</span>
         </div>
       </div>
-      <figure>
-        <img src="/images/exhibitions/light-and-color.jpg" alt="Claude Monet, Water Lilies, 1907: lily pads floating on a pond reflecting the sky">
-        <figcaption>Claude Monet, Water Lilies, 1907. Wikimedia Commons, public domain.</figcaption>
-      </figure>
     </section>
 
+    <!-- Artist marquee -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Hokusai</span><span>Rembrandt</span><span>Monet</span><span>Degas</span><span>Van Gogh</span><span>Kahlo</span><span>O'Keeffe</span><span>Rothko</span><span>Demuth</span>
+        <span>Hokusai</span><span>Rembrandt</span><span>Monet</span><span>Degas</span><span>Van Gogh</span><span>Kahlo</span><span>O'Keeffe</span><span>Rothko</span><span>Demuth</span>
+      </div>
+    </div>
+
+    <!-- Statement -->
+    <section class="statement">
+      <p class="mega-word reveal" aria-hidden="true">MUSEUM</p>
+      <div class="statement-grid">
+        <p class="lead reveal">A home for the art that stops you mid-step: woodblock seas, impressionist light, and the painters who are rewriting Houston's story right now.</p>
+        <div class="reveal">
+          <div class="stat-row">
+            <div><strong id="statExhibitions">&mdash;</strong><span>Exhibitions</span></div>
+            <div><strong id="statArtworks">&mdash;</strong><span>Works on view</span></div>
+            <div><strong id="statGalleries">&mdash;</strong><span>Galleries</span></div>
+          </div>
+          <p class="muted" style="margin-top:20px">Create a free account to reserve timed admission, keep your tickets in one place and shop the museum store.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Exhibitions -->
     <section class="section" id="exhibitions">
-      <h2>Exhibitions</h2>
-      <p id="exhibitions-status" class="muted">Loading exhibitions...</p>
-      <div id="group-active" class="hidden"><h3 class="group-title">On view now</h3><div class="collection"></div></div>
-      <div id="group-upcoming" class="hidden"><h3 class="group-title">Coming soon</h3><div class="collection"></div></div>
-      <div id="group-completed" class="hidden"><h3 class="group-title">Past exhibitions</h3><div class="collection"></div></div>
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow">What's on</p>
+          <h2>Exhibitions</h2>
+        </div>
+        <p>Rotating shows drawn from four centuries of painting, print and sculpture.</p>
+      </div>
+      <p id="exhibitions-status" class="muted">Loading exhibitions&hellip;</p>
+      <div id="group-active" class="hidden">
+        <h3 class="group-title"><span class="dot"></span>On view now</h3>
+        <div class="ex-grid featured"></div>
+      </div>
+      <div id="group-upcoming" class="hidden">
+        <h3 class="group-title">Coming soon</h3>
+        <div class="ex-grid"></div>
+      </div>
+      <div id="group-completed" class="hidden">
+        <h3 class="group-title">Past exhibitions</h3>
+        <div class="ex-grid"></div>
+      </div>
     </section>
 
-    <section class="section" id="collection">
-      <h2>From the collection</h2>
-      <p id="artworks-status" class="muted">Loading artworks...</p>
-      <div id="artworks" class="collection"></div>
+    <!-- Collection -->
+    <section class="section" id="collection" style="padding-top:0">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow">The collection</p>
+          <h2>Works to <em>linger</em> over</h2>
+        </div>
+        <p>A selection of the paintings, prints and sculpture in our care.</p>
+      </div>
+      <p id="artworks-status" class="muted">Loading artworks&hellip;</p>
+      <div id="artworks" class="masonry"></div>
+    </section>
+
+    <!-- Visit / tickets -->
+    <section id="visit" class="cta-band reveal">
+      <img class="bg" src="/images/artworks/red-fuji.jpg" alt="" loading="lazy">
+      <p class="eyebrow">Plan your visit</p>
+      <h2>Your afternoon with the <em>masters</em> starts here.</h2>
+      <p>Pick an exhibition and a date, and your ticket is waiting for you at the door.</p>
+      <div class="price-row">
+        <div class="price"><span>Adult</span><strong>$20</strong></div>
+        <div class="price"><span>Senior</span><strong>$14</strong></div>
+        <div class="price"><span>Student</span><strong>$12</strong></div>
+        <div class="price"><span>Child</span><strong>$8</strong></div>
+      </div>
+      <div class="actions">
+        <a class="btn lg" href="/customer-register.html">Create free account <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn light lg" href="/login.html">I already have one</a>
+      </div>
+      <a class="donate-tab" data-donate href="#">
+        <span class="donate-icon" aria-hidden="true">&hearts;</span>
+        <span class="donate-text"><small>External site &middot; mfah.org</small><strong>Donate here</strong></span>
+        <span class="go" aria-hidden="true">&#8599;</span>
+      </a>
     </section>
   </main>
 
   <footer class="site-footer">
-    A COSC 3380 Team 4 demo project. Ticket reservations are for demonstration only and no payment is collected.
+    <div>
+      <a class="site-brand" href="/landing.html">MFA <span>Museum</span></a>
+      <p>Four centuries of art, open to everyone in Houston.</p>
+    </div>
+    <div>
+      <h4>Explore</h4>
+      <a href="#exhibitions">Exhibitions</a>
+      <a href="#collection">Collection</a>
+      <a href="#visit">Tickets</a>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <a href="/login.html">Sign in</a>
+      <a href="/customer-register.html">Create account</a>
+    </div>
+    <p class="legal">A COSC 3380 Team 4 demo project. Ticket reservations are for demonstration only and no payment is collected. Donation links open the official Museum of Fine Arts, Houston website, which is not affiliated with this project.</p>
   </footer>
 
+<script defer src="/js/site.js"></script>
 <script>
-// Images for each exhibition, matched by title.
-// "banner" is used when the works cannot be shown because of copyright.
-const EXHIBITION_MEDIA = {
-  'Light & Color: Impressionist Masters': { src: 'light-and-color.jpg', credit: 'Claude Monet, Water Lilies, 1907. Wikimedia Commons, public domain' },
-  'Hokusai and the Floating World': { src: 'hokusai.jpg', credit: 'Katsushika Hokusai, The Great Wave off Kanagawa. The Metropolitan Museum of Art, Open Access' },
-  'American Modernism': { src: 'american-modernism.png', credit: 'Charles Demuth, I Saw the Figure 5 in Gold, 1928. The Metropolitan Museum of Art, Open Access' },
-  'Frida Kahlo: Portraits of Self': { banner: 'Frida Kahlo', note: 'Works in this exhibition are protected by copyright.' },
-  'Houston Voices: Contemporary Local Artists': { src: 'houston-voices.jpg', credit: 'Carol M. Highsmith Archive, Library of Congress' },
-  'Rembrandt to Monet: Four Centuries': { src: 'rembrandt-to-monet.jpg', credit: 'Rembrandt, Self-Portrait with Two Circles. Wikimedia Commons, public domain' }
-};
+document.addEventListener('DOMContentLoaded', () => {
+  const { make, media, formatDate, EXHIBITION_MEDIA, ARTWORK_MEDIA, reveal } = Site;
+  const STATUS_LABEL = { active: 'On view', upcoming: 'Coming soon', completed: 'Closed' };
 
-// Images for each artwork, matched by title.
-// "restricted" artworks are still under copyright, so no image is shown.
-const ARTWORK_MEDIA = {
-  'The Great Wave off Kanagawa': { src: 'great-wave.jpg', credit: 'The Metropolitan Museum of Art, Open Access' },
-  'Fine Wind, Clear Morning (Red Fuji)': { src: 'red-fuji.jpg', credit: 'The Metropolitan Museum of Art, Open Access' },
-  'Self-Portrait with Two Circles': { src: 'rembrandt-two-circles.jpg', credit: 'Wikimedia Commons, public domain' },
-  'Little Dancer Aged Fourteen': { src: 'little-dancer.png', credit: 'National Gallery of Art, Washington, Open Access' },
-  'The Rocks': { src: 'the-rocks.jpg', credit: 'Wikimedia Commons, public domain' },
-  'Water Lilies': { src: 'water-lilies.jpg', credit: 'Wikimedia Commons, public domain' },
-  'Untitled (Ship Channel)': { src: 'ship-channel.jpg', credit: 'Photo: Carol M. Highsmith Archive, Library of Congress' },
-  'Bayou at Dusk': { src: 'bayou-at-dusk.jpg', credit: 'Photo: Carol M. Highsmith Archive, Library of Congress' },
-  'Third Ward Morning': { src: 'third-ward-morning.jpg', credit: 'Photo: Carol M. Highsmith Archive, Library of Congress' },
-  // Stand-in image: no real artwork exists for this title
-  'The fall of Jake Paul': { src: 'fall-of-icarus.jpg', credit: 'Stand-in image: Pieter Bruegel the Elder (attrib.), Landscape with the Fall of Icarus. Wikimedia Commons, public domain' },
-  // The four works below are still under copyright; low-resolution images are used for educational purposes.
-  'The Two Fridas': { src: 'two-fridas.jpg', credit: '© Banco de México Diego Rivera Frida Kahlo Museums Trust. Image via Wikipedia, used for educational purposes' },
-  'Self-Portrait with Thorn Necklace and Hummingbird': { src: 'thorn-necklace.jpg', credit: '© Banco de México Diego Rivera Frida Kahlo Museums Trust. Image via Wikipedia, used for educational purposes' },
-  'Jimson Weed/White Flower No. 1': { src: 'jimson-weed.jpg', credit: '© Georgia O\'Keeffe Museum. Image: Georgia O\'Keeffe Museum, used for educational purposes' },
-  'No. 61 (Rust and Blue)': { src: 'rust-and-blue.jpg', credit: '© Kate Rothko Prizel & Christopher Rothko. Image via Wikipedia, used for educational purposes' }
-};
-
-function make(tag, className, text) {
-  const el = document.createElement(tag);
-  if (className) el.className = className;
-  if (text) el.textContent = text;
-  return el;
-}
-
-// Framed placeholder shown when there is no image to display
-function placeholder(note) {
-  const box = make('div', 'image-unavailable');
-  box.setAttribute('role', 'img');
-  box.setAttribute('aria-label', 'Image unavailable');
-  box.append(make('span', 'label-title', 'Image unavailable'), make('span', 'label-note', note));
-  return box;
-}
-
-// Returns the picture area for a card: an image, a banner, or a placeholder
-function mediaFor(entry, folder, altText) {
-  if (!entry) return placeholder('No image on file for this work yet.');
-  if (entry.restricted) return placeholder('This work is protected by copyright.');
-  if (entry.banner) {
-    const banner = make('div', 'exhibit-banner');
-    banner.append(make('span', 'banner-title', entry.banner), make('span', 'banner-note', entry.note));
-    return banner;
+  function exhibitionCard(row) {
+    const key = String(row.Status).toLowerCase();
+    const entry = EXHIBITION_MEDIA[row.ExhibitionTitle];
+    const card = make('article', 'ex-card reveal');
+    const chip = make('span', 'chip' + (key === 'active' ? ' live' : ''), STATUS_LABEL[key] || row.Status);
+    const body = make('div', 'body');
+    body.append(make('h3', '', row.ExhibitionTitle));
+    const meta = make('p', 'meta');
+    if (row.GalleryName) meta.append(make('span', '', row.GalleryName));
+    meta.append(make('span', '', formatDate(row.StartDate) + ' – ' + formatDate(row.EndDate)));
+    body.append(meta);
+    if (row.Description) body.append(make('p', 'desc', row.Description));
+    if (entry && entry.credit) body.append(make('p', 'credit', entry.credit));
+    card.append(media(entry, 'exhibitions', row.ExhibitionTitle), chip, body);
+    return card;
   }
-  const img = make('img', 'art-image');
-  img.src = '/images/' + folder + '/' + entry.src;
-  img.alt = altText;
-  img.loading = 'lazy';
-  // If the file is missing, show the placeholder instead of a broken image
-  img.onerror = () => img.replaceWith(placeholder('Image could not be loaded.'));
-  return img;
-}
 
-function formatDate(value) {
-  if (!value) return '';
-  const date = new Date(value + 'T00:00:00Z');
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-}
-
-function buildCard(entry, folder, title, metaLines, description) {
-  const card = make('article', 'collection-card');
-  const body = make('div', 'body');
-  body.append(make('h3', '', title));
-  for (const line of metaLines) {
-    if (line) body.append(make('p', 'meta', line));
+  function artworkCard(row) {
+    const entry = ARTWORK_MEDIA[row.Title];
+    const fig = make('figure', 'art-card reveal');
+    const frame = make('div', 'frame');
+    frame.append(media(entry, 'artworks', row.Title, ''));
+    const cap = make('figcaption');
+    cap.append(make('h3', '', row.Title));
+    cap.append(make('p', 'meta', [row.Medium, row.CreationYear].filter(Boolean).join(' · ')));
+    if (entry && entry.credit) cap.append(make('p', 'credit', entry.credit));
+    fig.append(frame, cap);
+    return fig;
   }
-  if (description) body.append(make('p', 'desc', description));
-  if (entry && entry.credit) body.append(make('p', 'credit', entry.credit));
-  card.append(mediaFor(entry, folder, title), body);
-  return card;
-}
 
-async function loadExhibitions() {
-  const status = document.getElementById('exhibitions-status');
-  try {
-    const response = await fetch('/api/public/exhibitions');
-    if (!response.ok) throw new Error('Unable to load');
-    const rows = await response.json();
-    if (!rows.length) { status.textContent = 'No exhibitions are listed right now.'; return; }
-    status.remove();
-
-    for (const row of rows) {
-      const group = document.getElementById('group-' + String(row.Status).toLowerCase())
-                 || document.getElementById('group-completed');
-      group.classList.remove('hidden');
-      group.querySelector('.collection').append(buildCard(
-        EXHIBITION_MEDIA[row.ExhibitionTitle],
-        'exhibitions',
-        row.ExhibitionTitle,
-        [row.GalleryName, formatDate(row.StartDate) + ' – ' + formatDate(row.EndDate)],
-        row.Description
-      ));
+  async function loadExhibitions() {
+    const status = document.getElementById('exhibitions-status');
+    try {
+      const response = await fetch('/api/public/exhibitions');
+      if (!response.ok) throw new Error('Unable to load');
+      const rows = await response.json();
+      document.getElementById('statExhibitions').textContent = rows.length;
+      document.getElementById('statGalleries').textContent =
+        new Set(rows.map(r => r.GalleryName).filter(Boolean)).size;
+      if (!rows.length) { status.textContent = 'No exhibitions are listed right now.'; return; }
+      status.remove();
+      for (const row of rows) {
+        const group = document.getElementById('group-' + String(row.Status).toLowerCase())
+                   || document.getElementById('group-completed');
+        group.classList.remove('hidden');
+        group.querySelector('.ex-grid').append(exhibitionCard(row));
+      }
+      reveal(document.getElementById('exhibitions'));
+    } catch (e) {
+      status.textContent = 'Exhibitions could not be loaded. Refresh the page to try again.';
     }
-  } catch (e) {
-    status.textContent = 'Exhibitions could not be loaded. Refresh the page to try again.';
   }
-}
 
-async function loadArtworks() {
-  const status = document.getElementById('artworks-status');
-  const box = document.getElementById('artworks');
-  try {
-    const response = await fetch('/api/public/artworks');
-    if (!response.ok) throw new Error('Unable to load');
-    const rows = await response.json();
-    if (!rows.length) { status.textContent = 'No artworks are listed right now.'; return; }
-    status.remove();
-
-    for (const row of rows) {
-      box.append(buildCard(
-        ARTWORK_MEDIA[row.Title],
-        'artworks',
-        row.Title,
-        [row.Medium, row.CreationYear ? String(row.CreationYear) : '']
-      ));
+  async function loadArtworks() {
+    const status = document.getElementById('artworks-status');
+    const box = document.getElementById('artworks');
+    try {
+      const response = await fetch('/api/public/artworks');
+      if (!response.ok) throw new Error('Unable to load');
+      const rows = await response.json();
+      document.getElementById('statArtworks').textContent = rows.length;
+      if (!rows.length) { status.textContent = 'No artworks are listed right now.'; return; }
+      status.remove();
+      // Works with images first, so the wall reads as a gallery.
+      rows.sort((a, b) => (ARTWORK_MEDIA[b.Title] ? 1 : 0) - (ARTWORK_MEDIA[a.Title] ? 1 : 0));
+      for (const row of rows) box.append(artworkCard(row));
+      reveal(box);
+    } catch (e) {
+      status.textContent = 'Artworks could not be loaded. Refresh the page to try again.';
     }
-  } catch (e) {
-    status.textContent = 'Artworks could not be loaded. Refresh the page to try again.';
   }
-}
 
-loadExhibitions();
-loadArtworks();
+  loadExhibitions();
+  loadArtworks();
+});
 </script>
 </body>
 </html>
