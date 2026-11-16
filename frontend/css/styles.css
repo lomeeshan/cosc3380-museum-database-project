@@ -872,6 +872,10 @@ tbody tr:hover { background: rgba(243, 237, 227, 0.035); }
 .donate-note { font-size: 13px !important; color: var(--muted) !important; margin: 16px 0 0; max-width: 46ch; }
 .tiers { display: grid; gap: 12px; }
 .tier {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   display: grid;
   grid-template-columns: 110px 1fr auto;
   align-items: center;
@@ -890,7 +894,12 @@ tbody tr:hover { background: rgba(243, 237, 227, 0.035); }
 .tier strong { font-family: var(--serif); font-weight: 400; font-size: 44px; line-height: 1; }
 .tier span { color: var(--ink-soft); font-size: 15px; }
 .tier .go { color: var(--accent); font-size: 20px; transition: transform .25s var(--ease); }
-.tier:hover .go { transform: translateX(4px); }
+.tier .go { opacity: 0; }
+.tier:hover .go { opacity: .5; }
+.tier[aria-checked="true"] { border-color: var(--accent); background: rgba(255,90,31,.16); box-shadow: 0 0 0 1px var(--accent); }
+.tier[aria-checked="true"] .go { opacity: 1; }
+.donate-message { margin: 16px 0 0; max-width: 46ch; }
+.donate-message:empty { display: none; }
 
 .page-section { max-width: 1400px; margin: 0 auto; padding: clamp(56px, 8vw, 110px) clamp(16px, 4vw, 56px) 0; }
 .page-section .section-head h2 { font-size: clamp(40px, 5vw, 72px); }

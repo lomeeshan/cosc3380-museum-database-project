@@ -210,6 +210,23 @@
     }
   });
 
+  // ---------- Donation (demo only, nothing is charged or stored) ----------
+  let donation = 100;
+  const tiers = document.querySelectorAll('.tier[data-amount]');
+  const donateButton = el('donateButton');
+  function selectTier(amount) {
+    donation = amount;
+    tiers.forEach(t => t.setAttribute('aria-checked', String(Number(t.dataset.amount) === amount)));
+    donateButton.firstChild.textContent = 'Donate $' + amount + ' ';
+  }
+  tiers.forEach(t => t.addEventListener('click', () => selectTier(Number(t.dataset.amount))));
+  donateButton.addEventListener('click', () => {
+    const msg = el('donateMessage');
+    msg.textContent = 'Thank you for your $' + donation +
+      ' donation! (Demo only, no payment was collected.)';
+    msg.className = 'notice donate-message';
+  });
+
   // ---------- Gift shop ----------
   const giftMessage = el('giftShopMessage');
   function giftNotify(text, error = false) {
